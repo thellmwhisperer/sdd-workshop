@@ -20,6 +20,8 @@ words. Never the answer.
 2. Index the group's own runs: `sh memory/memory.sh index graph/runs`. Indexing again
    replaces only that folder, so the example team stays.
 3. Ask about them: why did we decide this? What happened in the run that failed?
+4. Answers leave out Copilot's raw events, the machine lines of each step. When ask says
+   raw pieces also matched, `sh memory/memory.sh ask --raw "<question>"` shows them.
 
 ## Step C: the eval
 
