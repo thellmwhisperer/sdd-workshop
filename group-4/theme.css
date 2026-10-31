@@ -1,0 +1,29 @@
+:root { --blue: #254F9B; --red: #C20016; --text: #313131; --line: #e3e6ec; }
+* { box-sizing: border-box; }
+body { margin: 0; font-family: system-ui, Arial, sans-serif; color: var(--text); background: #fff; line-height: 1.5; }
+header { background: var(--blue); color: #fff; display: flex; align-items: center; gap: 24px; padding: 14px 24px; }
+header .brand { font-size: 1.6rem; font-weight: 800; color: #fff; text-decoration: none; letter-spacing: 0.5px; }
+header nav { display: flex; gap: 8px; }
+header nav a { color: #fff; text-decoration: none; font-weight: 700; padding: 8px 14px; border-radius: 999px; }
+header nav a:hover, header nav a:focus { background: rgba(255, 255, 255, 0.2); }
+header nav a[aria-current="page"] { background: #fff; color: var(--blue); }
+main { max-width: 960px; margin: 0 auto; padding: 24px; }
+h1 { color: var(--blue); font-weight: 800; margin: 0 0 16px; }
+label { font-weight: 700; }
+input, select { font: inherit; padding: 8px 10px; border: 2px solid var(--line); border-radius: 8px; color: var(--text); background: #fff; }
+input:focus, select:focus { outline: none; border-color: var(--blue); }
+button, .button { font: inherit; font-weight: 700; padding: 9px 18px; border: 0; border-radius: 999px; background: var(--blue); color: #fff; cursor: pointer; text-decoration: none; display: inline-block; }
+button:hover, .button:hover { filter: brightness(1.15); }
+button.danger, #list button:last-child { background: var(--red); }
+#cancel { background: #fff; color: var(--blue); border: 2px solid var(--blue); }
+form p { margin: 12px 0; }
+#errors { color: var(--red); font-weight: 700; }
+table { border-collapse: collapse; width: 100%; margin-top: 16px; }
+th { background: var(--blue); color: #fff; text-align: left; padding: 10px 12px; }
+td { padding: 10px 12px; border-bottom: 1px solid var(--line); }
+td button { margin-right: 6px; padding: 5px 12px; }
+#receipt { background: #fff; border: 2px dashed var(--line); border-radius: 8px; padding: 16px; max-width: 360px; font-family: ui-monospace, Menlo, Consolas, monospace; }
+.hero { background: #f4f6fb; border-radius: 16px; padding: 32px; }
+.hero p { font-size: 1.15rem; }
+.hero .actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 20px; }
+.hero .button.accent { background: var(--red); }
