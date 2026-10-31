@@ -22,8 +22,9 @@ var Pricing = (function () {
   function price(basket, promotions, date) {
     var lines = basket.map(function (line) {
       var saved = 0;
-      for (var i = 0; i < promotions.length && saved === 0; i++) {
-        saved = saving(line, promotions[i], date);
+      for (var i = 0; i < promotions.length; i++) {
+        var candidate = saving(line, promotions[i], date);
+        if (candidate > saved) saved = candidate;
       }
       return { name: line.name, price: line.price * line.quantity - saved, saving: saved };
     });
