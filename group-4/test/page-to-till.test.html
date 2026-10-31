@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>page-to-till</title>
+</head>
+<body>
+<pre id="result"></pre>
+<script src="check.js"></script>
+<script src="../products.js"></script>
+<script src="../pricing.js"></script>
+<script src="../store.js"></script>
+<script>
+localStorage.removeItem("brisa.promotions");
+document.write('<iframe id="hold" style="display:none"></iframe>');
+// An open document that is never closed keeps the load of this page pending, so the
+// answers of the frame below arrive before the browser takes the result.
+document.getElementById("hold").contentDocument.open();
+document.write('<iframe id="page" src="../promotions.html" width="800" height="600"></iframe>');
+
+function today() {
+  var d = new Date();
+  var two = function (n) { return (n < 10 ? "0" : "") + n; };
+  return d.getFullYear() + "-" + two(d.getMonth() + 1) + "-" + two(d.getDate());
+}
+
+var frame;
+var token = 0;
+var waiting = null;
+
+function ask(steps, read, then) {
+  token += 1;
+  waiting = { token: token, then: then };
+  frame.contentWindow.postMessage({ token: token, steps: steps, read: read }, "*");
+}
+
+window.addEventListener("message", function (event) {
+  if (!waiting || !event.data || event.data.token !== waiting.token) return;
+  var then = waiting.then;
+  waiting = null;
+  then(event.data);
+});
+
+function socks(quantity) {
+  return [{ name: "Socks", category: Products.socks.category,
+    price: Products.socks.price, quantity: quantity }];
+}
+
+function create(kind, extra, then) {
+  var steps = [
+    { set: ["name", "Socks " + kind] }, { set: ["kind", kind] }, { set: ["category", "socks"] },
+    { set: ["start", "2000-01-01"] }, { set: ["end", "2999-12-31"] }
+  ].concat(extra, [{ click: "#save" }]);
+  ask(steps, [], function (r) { then(r.promotions); });
+}
+
+document.getElementById("page").addEventListener("load", function () {
+  frame = document.getElementById("page");
+  create("second-half", [], function (saved) {
+    check("26 the page saves the kind second-half", saved[0].kind, "second-half");
+    check("26 2 socks are priced 6.00 at the till",
+      Pricing.price(socks(2), [saved[0]], today()).total, 600);
+    create("three-for-two", [], function (saved2) {
+      check("27 3 socks are priced 8.00 at the till",
+        Pricing.price(socks(3), [saved2[1]], today()).total, 800);
+      create("percent", [{ set: ["percent", "10"] }], function (saved3) {
+        check("28 10 socks are priced 36.00 at the till",
+          Pricing.price(socks(10), [saved3[2]], today()).total, 3600);
+        var old = [{ kind: "second half", category: "socks", start: "2000-01-01", end: "2999-12-31" }];
+        check("29 a promotion stored as second half still prices 2 socks at 6.00",
+          Pricing.price(socks(2), old, today()).total, 600);
+        localStorage.removeItem("brisa.promotions");
+        document.getElementById("hold").contentDocument.close();
+      });
+    });
+  });
+});
+</script>
+</body>
+</html>
