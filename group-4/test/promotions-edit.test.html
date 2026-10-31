@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>promotions-edit</title>
+</head>
+<body>
+<pre id="result"></pre>
+<script src="check.js"></script>
+<script src="../pricing.js"></script>
+<script src="../store.js"></script>
+<script>
+localStorage.removeItem("brisa.promotions");
+
+var jacketItem = [{ name: "Jacket", category: "jackets", price: 8000, quantity: 1 }];
+var today = "2026-10-30";
+Store.add({ name: "Black Friday jackets", kind: "percent", category: "jackets", percent: 20,
+  start: "2026-10-26", end: "2026-11-01" });
+
+var edited = Store.update(0, { name: "Black Friday jackets", kind: "percent", category: "jackets",
+  percent: 25, start: "2026-10-26", end: "2026-11-01" });
+check("14 the edit is accepted", edited.ok, true);
+check("14 the list shows 25 %", Store.list()[0].percent, 25);
+check("14 the jacket is priced 60.00",
+  Pricing.price(jacketItem, Store.list(), today).lines[0].price, 6000);
+
+var refused = Store.update(0, { name: "Black Friday jackets", kind: "percent", category: "jackets",
+  percent: 120, start: "2026-10-26", end: "2026-11-01" });
+check("14 an edit with 120 % is refused", refused.ok, false);
+check("14 the refused edit changes nothing", Store.list()[0].percent, 25);
+
+var removed = Store.remove(0);
+check("15 the delete is accepted", removed.ok, true);
+check("15 the promotion is no longer in the list", Store.list().length, 0);
+check("15 the jacket is priced 80.00",
+  Pricing.price(jacketItem, Store.list(), today).lines[0].price, 8000);
+
+localStorage.removeItem("brisa.promotions");
+</script>
+</body>
+</html>
