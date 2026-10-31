@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>promotions-category</title>
+</head>
+<body>
+<pre id="result"></pre>
+<script src="check.js"></script>
+<script src="../products.js"></script>
+<script src="../pricing.js"></script>
+<script src="../store.js"></script>
+<script>
+localStorage.removeItem("brisa.promotions");
+document.write('<iframe id="hold" style="display:none"></iframe>');
+// An open document that is never closed keeps the load of this page pending, so the
+// answers of the frame below arrive before the browser takes the result.
+document.getElementById("hold").contentDocument.open();
+document.write('<iframe id="page" src="../promotions.html" width="800" height="600"></iframe>');
+
+function today() {
+  var d = new Date();
+  var two = function (n) { return (n < 10 ? "0" : "") + n; };
+  return d.getFullYear() + "-" + two(d.getMonth() + 1) + "-" + two(d.getDate());
+}
+
+var frame;
+var token = 0;
+var waiting = null;
+
+// ask(steps, read, then): sends the frame some steps and gives `then` what the page answers.
+function ask(steps, read, then) {
+  token += 1;
+  waiting = { token: token, then: then };
+  frame.contentWindow.postMessage({ token: token, steps: steps, read: read }, "*");
+}
+
+window.addEventListener("message", function (event) {
+  if (!waiting || !event.data || event.data.token !== waiting.token) return;
+  var then = waiting.then;
+  waiting = null;
+  then(event.data);
+});
+
+document.getElementById("page").addEventListener("load", function () {
+  frame = document.getElementById("page");
+
+  var wanted = [];
+  Object.keys(Products).forEach(function (key) {
+    if (wanted.indexOf(Products[key].category) < 0) wanted.push(Products[key].category);
+  });
+
+  ask([], ["category"], function (r) {
+    check("19 the category field is a list", r.tags.category, "SELECT");
+    check("19 it offers exactly the categories of Products, each once", r.options.category, wanted);
+    check("19 the categories are jackets, socks, t-shirts, caps", r.options.category,
+      ["jackets", "socks", "t-shirts", "caps"]);
+
+    ask([
+      { set: ["name", "Socks 10"] }, { set: ["kind", "percent"] }, { set: ["category", "socks"] },
+      { set: ["percent", "10"] }, { set: ["start", "2000-01-01"] }, { set: ["end", "2999-12-31"] },
+      { click: "#save" }
+    ], [], function (r1) {
+      var saved = r1.promotions;
+      check("20 the promotion is saved with category socks",
+        saved.length === 1 && saved[0].category, "socks");
+      var socks = [{ name: "Socks", category: Products.socks.category,
+        price: Products.socks.price, quantity: 10 }];
+      check("20 10 socks are priced 36.00 at the till",
+        Pricing.price(socks, saved, today()).lines[0].price, 3600);
+
+      ask([{ set: ["category", "caps"] }, { click: "#list tbody button" }], ["category"], function (r2) {
+        check("21 editing shows the category already chosen", r2.values.category, "socks");
+        ask([{ set: ["percent", "20"] }, { click: "#save" }], [], function (r3) {
+          check("21 saving keeps the category", r3.promotions[0].category, "socks");
+          check("21 the edit is saved", r3.promotions[0].percent, 20);
+          localStorage.removeItem("brisa.promotions");
+          document.getElementById("hold").contentDocument.close();
+        });
+      });
+    });
+  });
+});
+</script>
+</body>
+</html>
