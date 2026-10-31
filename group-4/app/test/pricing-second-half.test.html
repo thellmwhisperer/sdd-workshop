@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>pricing-second-half</title>
+</head>
+<body>
+<pre id="result"></pre>
+<script src="check.js"></script>
+<script src="../pricing.js"></script>
+<script>
+var socksHalf = { kind: "second half", category: "socks" };
+
+var two = Pricing.price(
+  [{ name: "Socks", category: "socks", price: 400, quantity: 2 }], [socksHalf], "2026-10-26");
+check("3 two socks at 4.00 cost 6.00", two.lines[0].price, 600);
+check("3 two socks total and saving are 6.00 and 2.00", [two.total, two.saving], [600, 200]);
+
+var three = Pricing.price(
+  [{ name: "Socks", category: "socks", price: 400, quantity: 3 }], [socksHalf], "2026-10-26");
+check("4 three socks at 4.00 cost 10.00", three.lines[0].price, 1000);
+check("4 three socks total and saving are 10.00 and 2.00", [three.total, three.saving], [1000, 200]);
+</script>
+</body>
+</html>

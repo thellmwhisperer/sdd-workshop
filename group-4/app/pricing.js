@@ -6,6 +6,9 @@ var Pricing = (function () {
     if (promotion.kind === "percent" && promotion.category === line.category) {
       return Math.round(line.price * line.quantity * promotion.percent / 100);
     }
+    if (promotion.kind === "second half" && promotion.category === line.category) {
+      return Math.floor(line.quantity / 2) * Math.round(line.price / 2);
+    }
     return 0;
   }
 
