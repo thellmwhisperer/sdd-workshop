@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>pricing-percent</title>
+</head>
+<body>
+<pre id="result"></pre>
+<script src="check.js"></script>
+<script src="../pricing.js"></script>
+<script>
+var jackets20 = { kind: "percent", category: "jackets", percent: 20 };
+
+var jacket = Pricing.price(
+  [{ name: "Jacket", category: "jackets", price: 8000, quantity: 1 }], [jackets20], "2026-10-26");
+check("1 jacket at 80.00 with 20 % off jackets costs 64.00", jacket.lines[0].price, 6400);
+check("1 jacket total and saving are 64.00 and 16.00", [jacket.total, jacket.saving], [6400, 1600]);
+
+var cap = Pricing.price(
+  [{ name: "Cap", category: "caps", price: 1500, quantity: 1 }], [jackets20], "2026-10-26");
+check("2 cap outside the category costs 15.00", cap.lines[0].price, 1500);
+check("2 cap total and saving are 15.00 and 0", [cap.total, cap.saving], [1500, 0]);
+</script>
+</body>
+</html>
