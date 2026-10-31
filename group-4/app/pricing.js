@@ -2,7 +2,9 @@
 // { name, category, price, quantity }; a promotion is { kind, category, ... }.
 var Pricing = (function () {
   // saving(line, promotion): cents saved on the whole line by one promotion.
-  function saving(line, promotion) {
+  function saving(line, promotion, date) {
+    if (promotion.start && date < promotion.start) return 0;
+    if (promotion.end && date > promotion.end) return 0;
     if (promotion.kind === "percent" && promotion.category === line.category) {
       return Math.round(line.price * line.quantity * promotion.percent / 100);
     }
@@ -21,7 +23,7 @@ var Pricing = (function () {
     var lines = basket.map(function (line) {
       var saved = 0;
       for (var i = 0; i < promotions.length && saved === 0; i++) {
-        saved = saving(line, promotions[i]);
+        saved = saving(line, promotions[i], date);
       }
       return { name: line.name, price: line.price * line.quantity - saved, saving: saved };
     });
