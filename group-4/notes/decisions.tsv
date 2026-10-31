@@ -17,3 +17,4 @@ when	who	what	why	evidence
 2026-10-31 20:27	group 4	The graph merges the pull request itself once the check and the reviewer are green (replaces: a person merges)	"organise the plan and merge automatically"	graph/path.jsonl deliver line
 2026-10-31 20:43	group 4	Ticket 010: the promotion category is chosen from a list built from Products, not typed	"create the ticket and have a worker implement this"	tickets/010-category-choice.md
 2026-10-31 20:46	group 4	Ticket 011: the app takes a supermarket look in Carrefour colours (blue #254F9B, red #C20016), header links on every page; name stays Brisa, no Carrefour logo; runs after 010	"create another ticket to make it look like Carrefour"	tickets/011-supermarket-look.md
+2026-10-31 20:58	group 4	Ticket 012: pricing accepts both spellings of every kind, and a test goes from the page to the till for each kind	"yes" (after: second half never applies from the page)	tickets/012-page-to-till.md
