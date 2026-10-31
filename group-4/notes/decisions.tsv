@@ -1,0 +1,16 @@
+when	who	what	why	evidence
+2026-10-30 10:41	group 4	Marketing creates promotions on a page	Promotions change every Monday and IT is one person two days a week	DOMAIN.md, decision 1
+2026-10-30 10:41	group 4	Promotions apply automatically at the till, best one per product	1 promoted basket in 8 was charged wrong when applied by hand	DOMAIN.md, decision 2
+2026-10-30 10:42	group 4	Receipt shows savings as one total line	Customers who see savings come back; narrow paper keeps it to one line	DOMAIN.md, decision 3
+2026-10-30 10:54	group 4	Equal savings: the first promotion saved wins	Same saving costs the customer the same; the brief has no tie rule	tickets/004-best-one.md, CONTEXT
+2026-10-30 10:56	group 4	Backlog ready: tickets 001 to 009	The group read the tickets and agreed the ACCEPTANCE numbers	tickets/backlog-ready.md
+2026-10-30 11:02	group 4	Agent time limit: 5 minutes (limit 300)	Gives the agent room to finish a ticket; the node cuts it after that and calls it red	graph/NODE.md, limit
+2026-10-30 11:02	group 4	Agent may touch app/ only (plus graph/runs/ for its report)	Tickets are the brief; a worker must not rewrite its own brief	graph/NODE.md, dir
+2026-10-30 11:03	group 4	Agent that ends without report.md is red	No report means nobody can audit what it did	graph/NODE.md, blue checks
+2026-10-30 11:10	group 4	Ticket 000 (the node) approved and signed	The group read it with NODE.md and the job shapes	tickets/000-node.md, first line
+2026-10-31 10:54	group 4	Rounds before a person: 2 (check and review lines)	reason: not given	graph/path.jsonl, rounds
+2026-10-31 10:56	group 4	Reviewer may block tests, lint and design	"review everything to make sure what has been built is top"	graph/path.jsonl review line; .github/skills/reviewer/SKILL.md
+2026-10-31 10:58	group 4	A person merges the pull request (no auto-merge)	"we want to see what is being built before merging"	graph/path.jsonl deliver line
+2026-10-31 10:59	group 4	Path accepted as written; reviewer limit 300 like the worker	reason: not given	graph/path.jsonl
+2026-10-31 11:02	group 4	Worker and reviewer skills accepted as first version; reviewer keeps the ticket 001 example; design list as proposed	"looks good", "keep, it looks good"	.github/skills/worker/SKILL.md, .github/skills/reviewer/SKILL.md
+2026-10-31 11:03	group 4	Ticket 000-path approved with the group decisions and acceptance 8 (reviewer block, two rounds)	"yes all good"	tickets/000-path.md

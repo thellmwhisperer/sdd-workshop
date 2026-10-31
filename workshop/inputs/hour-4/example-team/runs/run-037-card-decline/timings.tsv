@@ -1,0 +1,6 @@
+node	seconds
+1-prepare	30
+2-work	355
+3-gate	63
+4-review	111
+5-deliver	30

@@ -1,0 +1,4 @@
+group-1 checkout
+group-2 inventory
+group-3 loyalty
+group-4 promotions

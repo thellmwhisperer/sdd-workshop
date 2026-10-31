@@ -1,0 +1,7 @@
+# shellcheck settings for the whole repository.
+# SC2016: commands for later (steps, mocks, the agent call of node.sh) are written in single quotes on purpose.
+# SC2329: the tests call their helpers through check "$@", which shellcheck cannot see.
+disable=SC2016,SC2329
+# The app's tests source the app (# shellcheck source=../<file>.sh): follow it from the test.
+external-sources=true
+source-path=SCRIPTDIR

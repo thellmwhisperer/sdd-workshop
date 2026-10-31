@@ -1,0 +1,28 @@
+# Group 1: when a pull request that touches group-1/app/ is merged into main, the app's
+# tests run, and when they are green the app is published on the workshop's site, at
+# https://<owner>.github.io/<repo>/group-1/ (.github/pages/publish.sh). A red test
+# publishes nothing: the site keeps the last green app. Only this group's folder triggers it.
+name: group 1
+on:
+  push:
+    branches: [main]
+    paths:
+      - group-1/app/**
+      - .github/workflows/group-1.yml
+      - .github/pages/publish.sh
+      - .github/pages/test.sh
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: site
+  cancel-in-progress: false
+jobs:
+  test-and-publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: The app's tests and lint
+        run: sh .github/pages/test.sh group-1
+      - name: Publish group-1 on the site
+        run: sh .github/pages/publish.sh group-1
