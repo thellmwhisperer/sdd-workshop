@@ -19,7 +19,7 @@ decided, what changed. Every answer quotes the piece it comes from.
 | 7. The discount read the wrong way | did the worker ever apply a discount the wrong way? |
 
 ```
-sh memory/memory.sh ask "<question>"     by words today; by meaning needs a model runtime
+sh memory/memory.sh ask "<question>"     by words, and by meaning with a small model on the laptop
 sh memory/memory.sh eval "<question>"    the model, without and with what was found
 sh memory/memory.sh index graph/runs     add your own runs, then ask about them
 sh memory/memory.sh ask --raw "<question>"   only Copilot's raw events, left out above

@@ -7,11 +7,11 @@ words. Never the answer.
 
 1. Nothing to install: the tool needs only `sqlite3`. Read `memory/CASES.md` with the group
    and let them pick one case.
-2. Ask its starting question with `sh memory/memory.sh ask "<question>"`. It searches by
-   words today; by meaning needs a model runtime.
-3. If by words finds nothing, that is the lesson: the team wrote it with other words.
-   Vectors would search by meaning; today, ask again with the team's words. A concrete
-   question works better than a vague one.
+2. Ask its starting question with `sh memory/memory.sh ask "<question>"`. It searches
+   twice: by words, and by meaning with a small model on the laptop.
+3. If by words finds nothing and by meaning finds it, that is the lesson: the team wrote
+   it with other words, and the vectors match the meaning. A concrete question works
+   better than a vague one.
 
 ## Step B: reconstruct it, then your own runs
 

@@ -92,7 +92,7 @@ Layout: text
 - **Index:** cut what the system produced into pieces and store them.
 - **Retrieve:** find the pieces that answer your question.
 - **Generate:** the model answers with those pieces in its context.
-- In this module: one question, searched by words, full-text in SQLite. By meaning needs a model runtime on the laptop: same steps, one more dependency. We do words today.
+- In this module: each question searched two ways, by words (full-text in SQLite) and by meaning (vectors from a 23 MB model that runs on your laptop). Same steps at any size.
 
 > RETRIEVE BEFORE YOU GENERATE
 
