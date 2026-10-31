@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>receipt</title>
+</head>
+<body>
+<pre id="result"></pre>
+<script src="check.js"></script>
+<script src="../pricing.js"></script>
+<script src="../products.js"></script>
+<script src="../receipt.js"></script>
+<script>
+var promotions = [
+  { kind: "percent", category: "jackets", percent: 20 },
+  { kind: "second half", category: "socks" }
+];
+var date = "2026-10-26";
+
+var r17 = Receipt.make(
+  [{ product: "jacket", quantity: 1 }, { product: "socks", quantity: 2 }], promotions, date);
+var saved17 = r17.filter(function (line) { return /saved/i.test(line); });
+check("17 jacket and two socks total 70.00 €", r17.filter(function (l) { return l.indexOf("Total") === 0; }), ["Total 70.00 €"]);
+check("17 last line is You saved 18.00 €", r17[r17.length - 1], "You saved 18.00 €");
+check("17 no other line mentions a saving", saved17, ["You saved 18.00 €"]);
+
+var r18 = Receipt.make([{ product: "cap", quantity: 1 }], promotions, date);
+check("18 one cap total 15.00 €", r18.filter(function (l) { return l.indexOf("Total") === 0; }), ["Total 15.00 €"]);
+check("18 no You saved line", r18.filter(function (l) { return /saved/i.test(l); }), []);
+</script>
+</body>
+</html>
