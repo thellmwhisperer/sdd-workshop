@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>promotions-page</title>
+</head>
+<body>
+<pre id="result"></pre>
+<script src="check.js"></script>
+<script src="../store.js"></script>
+<script>
+localStorage.removeItem("brisa.promotions");
+
+var jackets = { name: "Black Friday jackets", kind: "percent", category: "jackets", percent: 20,
+  start: "2026-10-26", end: "2026-11-01" };
+var saved = Store.add(jackets);
+check("11 creating Black Friday jackets is accepted", saved.ok, true);
+check("11 the list shows the promotion with its fields", Store.list(), [jackets]);
+check("11 after a reload the promotion is still listed", Store.list(), [jackets]);
+
+var bad = { name: "Too much", kind: "percent", category: "jackets", percent: 120,
+  start: "2026-10-26", end: "2026-11-01" };
+var refused = Store.add(bad);
+check("12 120 % is refused", refused.ok, false);
+check("12 the message says the percent must be between 1 and 100",
+  refused.errors, ["The percent must be between 1 and 100"]);
+check("12 nothing is saved", Store.list().length, 1);
+
+var backwards = { name: "Backwards", kind: "percent", category: "jackets", percent: 20,
+  start: "2026-11-01", end: "2026-10-26" };
+var late = Store.add(backwards);
+check("13 an end date before the start date is refused", late.ok, false);
+check("13 the message says the end date is before the start date",
+  late.errors, ["The end date is before the start date"]);
+check("13 nothing is saved", Store.list().length, 1);
+
+localStorage.removeItem("brisa.promotions");
+</script>
+</body>
+</html>
