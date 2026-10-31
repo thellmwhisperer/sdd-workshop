@@ -128,6 +128,27 @@ for g in 1 2 3 4; do
 done
 check 'the publish script parses' sh -n "$workshop/../.github/pages/publish.sh"
 
+echo "hour 4's memory: search by meaning, with a small model and its program for the Mac"
+mem="$workshop/inputs/hour-4/memory"
+# vectors_ready <db>: every piece but Copilot's raw events has its vector.
+vectors_ready() {
+  [ "$(sqlite3 "$1" "SELECT (SELECT count(*) FROM pieces WHERE source NOT LIKE '%copilot.jsonl') = (SELECT count(*) FROM vectors);")" = 1 ]
+}
+# meaning_finds <question> <source>: on a copy of the memory, ask finds the source by meaning.
+meaning_finds() {
+  rm -rf "$scratch/memory"
+  mkdir -p "$scratch"
+  cp -R "$mem" "$scratch/memory"
+  sh "$scratch/memory/memory.sh" ask "$1" | awk '/^BY MEANING/ { on = 1 } on' | grep -q "$2"
+}
+check 'the model, minilm.bin' test -s "$mem/minilm.bin"
+for v in darwin-arm64 darwin-amd64; do
+  check "the vectors program for $v" test -s "$mem/bin/vectors-$v"
+done
+check "every piece of the example team has its vector" vectors_ready "$mem/memory.sqlite"
+check 'by meaning on this machine: "who is allowed to merge?" finds the merge conversation' \
+  meaning_finds 'who is allowed to merge?' chief-and-ines-merge
+
 echo "the chief: Javier's talk of each module, as a skill"
 for m in 1 2 3 4; do
   check "skill module-$m" grep -qx "name: module-$m" "$workshop/../.github/skills/module-$m/SKILL.md"

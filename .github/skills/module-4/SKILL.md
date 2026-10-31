@@ -80,7 +80,7 @@ Key line: **NOT A MONITORING DASHBOARD. EVERY DECISION IS BACKED BY A HUMAN'S WO
 - **Index:** cut what the system produced into pieces and store them.
 - **Retrieve:** find the pieces that answer your question.
 - **Generate:** the model answers with those pieces in its context.
-- In this module: one question, searched by words, full-text in SQLite. By meaning needs a model runtime on the laptop: same steps, one more dependency. We do words today.
+- In this module: each question searched two ways, by words (full-text in SQLite) and by meaning (vectors from a 23 MB model that runs on your laptop). Same steps at any size.
 
 Key line: **RETRIEVE BEFORE YOU GENERATE**
 
@@ -143,10 +143,11 @@ between worker and reviewer; since then the cap is two.
 
 - The group's own notes (`notes/`, one per hour, written by you) are episodic memory: the
   decisions of the day backed by their words. Index them with their runs.
-- The search is by words today; by meaning needs a model runtime. When it finds nothing,
-  say why: the team wrote it with other words. Vectors would match the meaning of the
-  question, not its words; today, ask again with the words the team would have used. A
-  concrete question works better than a vague one.
+- Ask shows two searches. By words finds the pieces that hold the question's words; when
+  it finds nothing, the team wrote it with other words. By meaning (vectors, MiniLM on
+  the laptop) finds the pieces that mean the same, with other words; its score goes from
+  0, nothing in common, to 1, the same meaning. Read both with the group: that difference
+  is the lesson. A concrete question works better than a vague one.
 - In the eval, the answer without retrieval is the model alone; with retrieval it quotes
   the source. That is "retrieve before you generate".
 - The improvement you propose comes from what they read: another model, another cap, a new
@@ -158,5 +159,6 @@ between worker and reviewer; since then the cap is two.
   it.
 - **Why keep the raw conversations if we have a summary?** Distil on top of the source,
   never instead of it: a summary can be wrong, the source can be checked.
-- **Do we need a vector database?** Not here: a SQLite file on the laptop, searched by
-  words today; by meaning needs a model runtime. The steps are the same at any size.
+- **Do we need a vector database?** Not here: a SQLite file on the laptop holds the
+  pieces and their vectors, and a 23 MB model on the laptop makes them. The steps are the
+  same at any size; a vector database is for millions of pieces.
