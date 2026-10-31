@@ -14,7 +14,7 @@
       <option value="second-half">second half</option>
       <option value="three-for-two">three for two</option>
     </select></label></p>
-  <p><label>Category <input id="category"></label></p>
+  <p><label>Category <select id="category"></select></label></p>
   <p><label>Percent <input id="percent" type="number"></label></p>
   <p><label>Start <input id="start" type="date"></label></p>
   <p><label>End <input id="end" type="date"></label></p>
@@ -25,9 +25,26 @@
   <thead><tr><th>Name</th><th>Kind</th><th>Category</th><th>Percent</th><th>Start</th><th>End</th><th></th></tr></thead>
   <tbody></tbody>
 </table>
+<script src="products.js"></script>
 <script src="store.js"></script>
 <script>
 var editing = -1;
+
+// The categories the shop sells, each once, in the order of Products.
+function fillCategories() {
+  var select = document.getElementById("category");
+  var seen = [];
+  Object.keys(Products).forEach(function (key) {
+    var category = Products[key].category;
+    if (seen.indexOf(category) >= 0) return;
+    seen.push(category);
+    var option = document.createElement("option");
+    option.value = category;
+    option.textContent = category;
+    select.appendChild(option);
+  });
+}
+fillCategories();
 
 function fill(id, value) { document.getElementById(id).value = value === undefined ? "" : value; }
 
@@ -101,6 +118,24 @@ document.getElementById("form").addEventListener("submit", function (event) {
 });
 
 document.getElementById("cancel").addEventListener("click", stopEdit);
+
+// A test page shows this page in a frame; from there it can only talk by message.
+// The message { steps, read } sets fields, clicks buttons, and the reply says what the form shows.
+window.addEventListener("message", function (event) {
+  if (window.parent === window || !event.data || !event.data.steps) return;
+  event.data.steps.forEach(function (step) {
+    if (step.set) document.getElementById(step.set[0]).value = step.set[1];
+    if (step.click) document.querySelector(step.click).click();
+  });
+  var reply = { token: event.data.token, promotions: Store.list(), values: {}, options: {}, tags: {} };
+  (event.data.read || []).forEach(function (id) {
+    var field = document.getElementById(id);
+    reply.values[id] = field.value;
+    reply.tags[id] = field.tagName;
+    reply.options[id] = field.options ? Array.prototype.map.call(field.options, function (o) { return o.value; }) : [];
+  });
+  event.source.postMessage(reply, "*");
+});
 
 render();
 </script>
