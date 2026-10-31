@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>pricing-three-for-two</title>
+</head>
+<body>
+<pre id="result"></pre>
+<script src="check.js"></script>
+<script src="../pricing.js"></script>
+<script>
+var tshirts = { kind: "three for two", category: "t-shirts" };
+
+var three = Pricing.price(
+  [{ name: "T-shirt", category: "t-shirts", price: 1000, quantity: 3 }], [tshirts], "2026-10-26");
+check("5 three T-shirts at 10.00 cost 20.00", three.lines[0].price, 2000);
+check("5 three T-shirts total and saving are 20.00 and 10.00", [three.total, three.saving], [2000, 1000]);
+
+var two = Pricing.price(
+  [{ name: "T-shirt", category: "t-shirts", price: 1000, quantity: 2 }], [tshirts], "2026-10-26");
+check("6 two T-shirts at 10.00 cost 20.00", two.lines[0].price, 2000);
+check("6 two T-shirts total and saving are 20.00 and 0", [two.total, two.saving], [2000, 0]);
+</script>
+</body>
+</html>
