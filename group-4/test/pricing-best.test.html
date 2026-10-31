@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>pricing-best</title>
+</head>
+<body>
+<pre id="result"></pre>
+<script src="check.js"></script>
+<script src="../pricing.js"></script>
+<script>
+var jacketBasket = [{ name: "Jacket", category: "jackets", price: 8000, quantity: 1 }];
+var p20 = { kind: "percent", category: "jackets", percent: 20 };
+var p10 = { kind: "percent", category: "jackets", percent: 10 };
+var both = Pricing.price(jacketBasket, [p10, p20], "2026-10-26");
+check("7 jacket with 20 % and 10 % both active costs 64.00", both.lines[0].price, 6400);
+check("7 the saving is 16.00, never 23.20", both.saving, 1600);
+
+var socks = [{ name: "Socks", category: "socks", price: 400, quantity: 3 }];
+var half = { kind: "second half", category: "socks" };
+var three = { kind: "three for two", category: "socks" };
+var best = Pricing.price(socks, [half, three], "2026-10-26");
+check("8 three socks with second half and buy 3 pay 2 cost 8.00", best.lines[0].price, 800);
+check("8 the saving is 4.00", best.saving, 400);
+</script>
+</body>
+</html>
