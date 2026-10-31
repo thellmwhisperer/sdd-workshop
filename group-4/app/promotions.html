@@ -18,19 +18,47 @@
   <p><label>Percent <input id="percent" type="number"></label></p>
   <p><label>Start <input id="start" type="date"></label></p>
   <p><label>End <input id="end" type="date"></label></p>
-  <p><button type="submit">Save</button></p>
+  <p><button type="submit" id="save">Save</button> <button type="button" id="cancel" hidden>Cancel</button></p>
 </form>
 <ul id="errors"></ul>
 <table id="list">
-  <thead><tr><th>Name</th><th>Kind</th><th>Category</th><th>Percent</th><th>Start</th><th>End</th></tr></thead>
+  <thead><tr><th>Name</th><th>Kind</th><th>Category</th><th>Percent</th><th>Start</th><th>End</th><th></th></tr></thead>
   <tbody></tbody>
 </table>
 <script src="store.js"></script>
 <script>
+var editing = -1;
+
+function fill(id, value) { document.getElementById(id).value = value === undefined ? "" : value; }
+
+function startEdit(index) {
+  var p = Store.list()[index];
+  editing = index;
+  fill("name", p.name); fill("kind", p.kind); fill("category", p.category);
+  fill("percent", p.percent); fill("start", p.start); fill("end", p.end);
+  document.getElementById("cancel").hidden = false;
+}
+
+function stopEdit() {
+  editing = -1;
+  document.getElementById("form").reset();
+  document.getElementById("cancel").hidden = true;
+}
+
+function showErrors(result) {
+  var errors = document.getElementById("errors");
+  errors.textContent = "";
+  result.errors.forEach(function (message) {
+    var item = document.createElement("li");
+    item.textContent = message;
+    errors.appendChild(item);
+  });
+}
+
 function render() {
   var body = document.querySelector("#list tbody");
   body.textContent = "";
-  Store.list().forEach(function (p) {
+  Store.list().forEach(function (p, index) {
     var row = document.createElement("tr");
     [p.name, p.kind, p.category, p.kind === "percent" ? p.percent + " %" : "", p.start, p.end]
       .forEach(function (value) {
@@ -38,6 +66,24 @@ function render() {
         cell.textContent = value;
         row.appendChild(cell);
       });
+    var actions = document.createElement("td");
+    var edit = document.createElement("button");
+    edit.type = "button";
+    edit.textContent = "Edit";
+    edit.addEventListener("click", function () { startEdit(index); });
+    var del = document.createElement("button");
+    del.type = "button";
+    del.textContent = "Delete";
+    del.addEventListener("click", function () {
+      Store.remove(index);
+      if (editing === index) stopEdit();
+      else if (editing > index) editing -= 1;
+      showErrors({ errors: [] });
+      render();
+    });
+    actions.appendChild(edit);
+    actions.appendChild(del);
+    row.appendChild(actions);
     body.appendChild(row);
   });
 }
@@ -48,17 +94,13 @@ document.getElementById("form").addEventListener("submit", function (event) {
   var promotion = { name: value("name"), kind: value("kind"), category: value("category"),
     start: value("start"), end: value("end") };
   if (promotion.kind === "percent") promotion.percent = Number(value("percent"));
-  var result = Store.add(promotion);
-  var errors = document.getElementById("errors");
-  errors.textContent = "";
-  result.errors.forEach(function (message) {
-    var item = document.createElement("li");
-    item.textContent = message;
-    errors.appendChild(item);
-  });
-  if (result.ok) document.getElementById("form").reset();
+  var result = editing >= 0 ? Store.update(editing, promotion) : Store.add(promotion);
+  showErrors(result);
+  if (result.ok) stopEdit();
   render();
 });
+
+document.getElementById("cancel").addEventListener("click", stopEdit);
 
 render();
 </script>

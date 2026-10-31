@@ -35,5 +35,25 @@ var Store = (function () {
     return { ok: true, errors: [] };
   }
 
-  return { list: list, validate: validate, add: add };
+  // update(index, promotion): replaces the saved one at index when valid; returns { ok, errors }.
+  function update(index, p) {
+    var all = list();
+    if (index < 0 || index >= all.length) return { ok: false, errors: ["The promotion does not exist"] };
+    var errors = validate(p);
+    if (errors.length > 0) return { ok: false, errors: errors };
+    all[index] = p;
+    localStorage.setItem(KEY, JSON.stringify(all));
+    return { ok: true, errors: [] };
+  }
+
+  // remove(index): deletes the saved promotion at index; returns { ok, errors }.
+  function remove(index) {
+    var all = list();
+    if (index < 0 || index >= all.length) return { ok: false, errors: ["The promotion does not exist"] };
+    all.splice(index, 1);
+    localStorage.setItem(KEY, JSON.stringify(all));
+    return { ok: true, errors: [] };
+  }
+
+  return { list: list, validate: validate, add: add, update: update, remove: remove };
 })();
