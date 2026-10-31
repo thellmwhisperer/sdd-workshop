@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Promotions</title>
+</head>
+<body>
+<h1>Promotions</h1>
+<form id="form">
+  <p><label>Name <input id="name"></label></p>
+  <p><label>Kind
+    <select id="kind">
+      <option value="percent">percent</option>
+      <option value="second-half">second half</option>
+      <option value="three-for-two">three for two</option>
+    </select></label></p>
+  <p><label>Category <input id="category"></label></p>
+  <p><label>Percent <input id="percent" type="number"></label></p>
+  <p><label>Start <input id="start" type="date"></label></p>
+  <p><label>End <input id="end" type="date"></label></p>
+  <p><button type="submit">Save</button></p>
+</form>
+<ul id="errors"></ul>
+<table id="list">
+  <thead><tr><th>Name</th><th>Kind</th><th>Category</th><th>Percent</th><th>Start</th><th>End</th></tr></thead>
+  <tbody></tbody>
+</table>
+<script src="store.js"></script>
+<script>
+function render() {
+  var body = document.querySelector("#list tbody");
+  body.textContent = "";
+  Store.list().forEach(function (p) {
+    var row = document.createElement("tr");
+    [p.name, p.kind, p.category, p.kind === "percent" ? p.percent + " %" : "", p.start, p.end]
+      .forEach(function (value) {
+        var cell = document.createElement("td");
+        cell.textContent = value;
+        row.appendChild(cell);
+      });
+    body.appendChild(row);
+  });
+}
+
+document.getElementById("form").addEventListener("submit", function (event) {
+  event.preventDefault();
+  var value = function (id) { return document.getElementById(id).value; };
+  var promotion = { name: value("name"), kind: value("kind"), category: value("category"),
+    start: value("start"), end: value("end") };
+  if (promotion.kind === "percent") promotion.percent = Number(value("percent"));
+  var result = Store.add(promotion);
+  var errors = document.getElementById("errors");
+  errors.textContent = "";
+  result.errors.forEach(function (message) {
+    var item = document.createElement("li");
+    item.textContent = message;
+    errors.appendChild(item);
+  });
+  if (result.ok) document.getElementById("form").reset();
+  render();
+});
+
+render();
+</script>
+</body>
+</html>
