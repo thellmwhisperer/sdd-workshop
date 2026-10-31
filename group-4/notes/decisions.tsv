@@ -14,3 +14,4 @@ when	who	what	why	evidence
 2026-10-31 10:59	group 4	Path accepted as written; reviewer limit 300 like the worker	reason: not given	graph/path.jsonl
 2026-10-31 11:02	group 4	Worker and reviewer skills accepted as first version; reviewer keeps the ticket 001 example; design list as proposed	"looks good", "keep, it looks good"	.github/skills/worker/SKILL.md, .github/skills/reviewer/SKILL.md
 2026-10-31 11:03	group 4	Ticket 000-path approved with the group decisions and acceptance 8 (reviewer block, two rounds)	"yes all good"	tickets/000-path.md
+2026-10-31 20:27	group 4	The graph merges the pull request itself once the check and the reviewer are green (replaces: a person merges)	"organise the plan and merge automatically"	graph/path.jsonl deliver line

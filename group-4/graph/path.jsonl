@@ -2,4 +2,4 @@
 {"step":2,"name":"work","kind":"agent","dir":"app","skill":"worker","agent":"graph/copilot.sh","limit":300,"on_red":"stop"}
 {"step":3,"name":"check","kind":"commands","dir":"app","run":"sh app/check.sh lint && sh app/check.sh test","on_red":2,"rounds":2}
 {"step":4,"name":"review","kind":"agent","dir":"app","skill":"reviewer","agent":"graph/copilot.sh","limit":300,"on_red":2,"rounds":2}
-{"step":5,"name":"deliver","kind":"commands","dir":"app","run":"git add -A app && git commit -qm <ticket> && git push -u origin HEAD && sh graph/pr.sh <ticket> <run>","on_red":"stop"}
+{"step":5,"name":"deliver","kind":"commands","dir":"app","run":"git add -A app && git commit -qm <ticket> && git push -u origin HEAD && sh graph/pr.sh <ticket> <run> && gh pr merge --squash","on_red":"stop"}
