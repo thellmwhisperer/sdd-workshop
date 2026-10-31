@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>till</title>
+</head>
+<body>
+<pre id="result"></pre>
+<iframe id="till" src="../till.html#socks=2" style="display:none"></iframe>
+<script src="check.js"></script>
+<script src="../store.js"></script>
+<script>
+localStorage.removeItem("brisa.promotions");
+
+Store.add({ name: "Socks second half", kind: "second half", category: "socks" });
+
+window.addEventListener("message", function (event) {
+  if (!event.data || event.data.type !== "till-lines") return;
+  var lines = event.data.lines;
+  check("16 two socks are charged 6.00 €", lines.filter(function (l) { return l.indexOf("Total") === 0; }), ["Total 6.00 €"]);
+  check("16 the cashier chose nothing: the receipt shows the saving", lines[lines.length - 1], "You saved 2.00 €");
+  localStorage.removeItem("brisa.promotions");
+});
+
+</script>
+</body>
+</html>
