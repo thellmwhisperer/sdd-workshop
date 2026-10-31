@@ -15,4 +15,4 @@ when	who	what	why	evidence
 2026-10-31 11:02	group 4	Worker and reviewer skills accepted as first version; reviewer keeps the ticket 001 example; design list as proposed	"looks good", "keep, it looks good"	.github/skills/worker/SKILL.md, .github/skills/reviewer/SKILL.md
 2026-10-31 11:03	group 4	Ticket 000-path approved with the group decisions and acceptance 8 (reviewer block, two rounds)	"yes all good"	tickets/000-path.md
 2026-10-31 20:27	group 4	The graph merges the pull request itself once the check and the reviewer are green (replaces: a person merges)	"organise the plan and merge automatically"	graph/path.jsonl deliver line
-2026-10-31 20:43	Ticket 010: the promotion category becomes a list built from Products, after "Socks" missed "socks" on the live site	group
+2026-10-31 20:43	group 4	Ticket 010: the promotion category is chosen from a list built from Products, not typed	"create the ticket and have a worker implement this"	tickets/010-category-choice.md
