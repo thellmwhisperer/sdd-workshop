@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Brisa till</title>
+</head>
+<body>
+<h1>Till</h1>
+<form id="add">
+  <select id="product"></select>
+  <input id="quantity" type="number" min="1" value="1">
+  <button type="submit">Add</button>
+  <button type="button" id="clear">New basket</button>
+</form>
+<pre id="receipt"></pre>
+<script src="pricing.js"></script>
+<script src="products.js"></script>
+<script src="store.js"></script>
+<script src="receipt.js"></script>
+<script>
+var Till = (function () {
+  var items = [];
+
+  // today(): the date of today as YYYY-MM-DD, in local time.
+  function today() {
+    var d = new Date();
+    var m = String(d.getMonth() + 1);
+    var day = String(d.getDate());
+    return d.getFullYear() + "-" + (m.length < 2 ? "0" + m : m) + "-" + (day.length < 2 ? "0" + day : day);
+  }
+
+  // lines(items): the receipt of the basket with the promotions saved now and active today.
+  function lines(basket) {
+    return Receipt.make(basket, Store.list(), today());
+  }
+
+  // add(product, quantity): puts the product in the basket; a repeated product adds up.
+  function add(product, quantity) {
+    for (var i = 0; i < items.length; i++) {
+      if (items[i].product === product) {
+        items[i].quantity += quantity;
+        return;
+      }
+    }
+    items.push({ product: product, quantity: quantity });
+  }
+
+  function clear() {
+    items = [];
+  }
+
+  function show() {
+    document.getElementById("receipt").textContent = lines(items).join("\n");
+  }
+
+  return { add: add, clear: clear, lines: lines, show: show, items: function () { return items; } };
+})();
+
+var select = document.getElementById("product");
+Object.keys(Products).forEach(function (key) {
+  var option = document.createElement("option");
+  option.value = key;
+  option.textContent = Products[key].name + " " + (Products[key].price / 100).toFixed(2) + " €";
+  select.appendChild(option);
+});
+document.getElementById("add").addEventListener("submit", function (event) {
+  event.preventDefault();
+  var quantity = parseInt(document.getElementById("quantity").value, 10);
+  if (!(quantity >= 1)) return;
+  Till.add(select.value, quantity);
+  Till.show();
+});
+// Inside a test page, the basket comes in the address (#product=quantity) and the receipt
+// goes back to the page that holds this one: a file page cannot reach into another one.
+window.addEventListener("load", function () {
+  var m = /^#(\w+)=(\d+)$/.exec(location.hash);
+  if (window.parent === window || !m) return;
+  window.parent.postMessage({ type: "till-lines", lines: Till.lines([{ product: m[1], quantity: parseInt(m[2], 10) }]) }, "*");
+});
+document.getElementById("clear").addEventListener("click", function () {
+  Till.clear();
+  Till.show();
+});
+</script>
+</body>
+</html>
