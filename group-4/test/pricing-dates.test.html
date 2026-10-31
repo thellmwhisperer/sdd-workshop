@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>pricing-dates</title>
+</head>
+<body>
+<pre id="result"></pre>
+<script src="check.js"></script>
+<script src="../pricing.js"></script>
+<script>
+var jacketBasket = [{ name: "Jacket", category: "jackets", price: 8000, quantity: 1 }];
+
+var ended = { kind: "percent", category: "jackets", percent: 20, start: "2026-10-01", end: "2026-10-25" };
+var after = Pricing.price(jacketBasket, [ended], "2026-10-26");
+check("9 a promotion that ended 2026-10-25, priced on 2026-10-26, leaves the jacket at 80.00", after.lines[0].price, 8000);
+
+var lastDay = { kind: "percent", category: "jackets", percent: 20, start: "2026-10-01", end: "2026-11-01" };
+var onEnd = Pricing.price(jacketBasket, [lastDay], "2026-11-01");
+check("10 a promotion ending 2026-11-01, priced on 2026-11-01, makes the jacket 64.00", onEnd.lines[0].price, 6400);
+</script>
+</body>
+</html>
