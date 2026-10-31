@@ -14,8 +14,10 @@ on:
   workflow_dispatch:
 permissions:
   contents: write
+# One queue per group: two merges of the same group publish one after the other. Two groups
+# at once both publish: publish.sh tries again on top of the other's site.
 concurrency:
-  group: site
+  group: site-group-4
   cancel-in-progress: false
 jobs:
   test-and-publish:
