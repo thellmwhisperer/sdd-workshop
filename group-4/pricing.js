@@ -9,6 +9,10 @@ var Pricing = (function () {
     if (promotion.kind === "second half" && promotion.category === line.category) {
       return Math.floor(line.quantity / 2) * Math.round(line.price / 2);
     }
+    if ((promotion.kind === "three for two" || promotion.kind === "three-for-two") &&
+        promotion.category === line.category) {
+      return Math.floor(line.quantity / 3) * line.price;
+    }
     return 0;
   }
 
