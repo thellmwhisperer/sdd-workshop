@@ -130,60 +130,88 @@ check 'the publish script parses' sh -n "$workshop/../.github/pages/publish.sh"
 
 echo "hour 4's memory: search by meaning, with a small model and its program for the Mac"
 mem="$workshop/inputs/hour-4/memory"
-# vectors_ready <db>: every piece but what is left out (raw events, tool turns) has its vector.
+# vectors_ready <db>: every exchange, thought and memory has its vector.
 vectors_ready() {
-  [ "$(sqlite3 "$1" "SELECT (SELECT count(*) FROM pieces WHERE who NOT IN ('raw', 'tool')) = (SELECT count(*) FROM vectors);")" = 1 ]
+  [ "$(sqlite3 "$1" "SELECT (SELECT count(*) FROM exchanges) = (SELECT count(*) FROM exchange_vectors)
+    AND (SELECT count(*) FROM thinking_blocks) = (SELECT count(*) FROM thinking_vectors)
+    AND (SELECT count(*) FROM memories) = (SELECT count(*) FROM memory_vectors);")" = 1 ]
 }
-# fresh_memory: a copy of the memory in the scratch folder, with no index of a group yet.
+# fresh_memory: a copy of the memory in the scratch folder, with no day of a group kept yet,
+# and a home with no Copilot sessions.
 fresh_memory() {
-  rm -rf "$scratch/memory" "$scratch/runs"
-  mkdir -p "$scratch"
+  rm -rf "$scratch/memory" "$scratch/runs" "$scratch/home"
+  mkdir -p "$scratch/home"
   cp -R "$mem" "$scratch/memory"
 }
-# meaning_finds <question> <source>: on a copy of the memory, ask finds the source by meaning
-# in the example team's index.
+# memory <args>: the copy's memory.sh, with the scratch home.
+memory() { HOME="$scratch/home" sh "$scratch/memory/memory.sh" "$@"; }
+# meaning_finds <question> <text>: on a copy of the memory, ask finds the text by meaning in
+# the example team, the rescue.
 meaning_finds() {
   fresh_memory
-  sh "$scratch/memory/memory.sh" ask "$1" | awk '/^THE EXAMPLE TEAM/ { team = 1 } /^YOUR RUNS/ { team = 0 }
-    team && /BY MEANING/ { on = 1 } on && team' | grep -q "$2"
+  memory ask "$1" | awk '/^Found by meaning/ { on = 1 } on' | grep -q "$2"
 }
-# turns_by_who: a run's conversation.md is kept by who speaks; a tool turn (a file the agent
-# read, its path full of the words of the question) stays out of ask and comes with --raw.
-turns_by_who() {
+# copilot_events <file>: a Copilot conversation as Copilot writes it: the human turn, what
+# the agent thought, a command it was denied (it wrote outside its folder), a file it read,
+# the model's usage, and its answer.
+copilot_events() {
+  mkdir -p "$(dirname "$1")"
+  printf '%s\n' \
+    '{"type":"user.message","timestamp":"2026-11-06T10:00:00Z","data":{"content":"Review the ticket."}}' \
+    '{"type":"assistant.message","timestamp":"2026-11-06T10:00:05Z","data":{"content":"","reasoningText":"The basket can be empty; is there a test?","toolRequests":[{"toolCallId":"a","name":"bash","arguments":{"command":"sh app/check.sh test > ../../outside.txt"}},{"toolCallId":"b","name":"view","arguments":{"path":"/g/skills/reviewer/SKILL.md"}}]}}' \
+    '{"type":"tool.execution_complete","timestamp":"2026-11-06T10:00:06Z","data":{"toolCallId":"a","success":false,"error":{"message":"Permission denied","code":"denied"}}}' \
+    '{"type":"tool.execution_complete","timestamp":"2026-11-06T10:00:07Z","data":{"toolCallId":"b","success":true,"result":{"content":"the whole skill file"}}}' \
+    '{"type":"session.usage_record","timestamp":"2026-11-06T10:00:08Z","data":{"usage":{"model":"m","inputTokens":100,"outputTokens":10,"cost":1}}}' \
+    '{"type":"assistant.message","timestamp":"2026-11-06T10:00:09Z","data":{"content":"I blocked it: no test for an empty basket."}}' \
+    > "$1"
+}
+# like_a_corpus: a run step's Copilot conversation is kept as La Roca keeps one: the human
+# turn and the agent's answer, what it thought, each tool with what it asked and whether
+# it was denied; what a tool gave back is not kept. The chief's sessions of this
+# repository are kept too, and only those.
+like_a_corpus() {
   fresh_memory
-  mkdir -p "$scratch/runs/001-x/step-4-review"
-  printf '%s\n' '# Copilot CLI Session' '' '### User' '' 'Review the ticket.' '' '---' '' '<sub>4s</sub>' '' \
-    '### `view`' '' '**view the file at /g/runs/001-percent-off/skills/reviewer/SKILL.md.**' '' '---' '' \
-    '### Copilot' '' 'I blocked it: no test for an empty basket.' \
-    > "$scratch/runs/001-x/step-4-review/conversation.md"
-  sh "$scratch/memory/memory.sh" index "$scratch/runs" > /dev/null 2>&1
-  [ "$(sqlite3 "$scratch/memory/group.sqlite" "SELECT group_concat(who, ',') FROM (SELECT who FROM pieces ORDER BY rowid);")" = User,tool,Copilot ] &&
-    ! sh "$scratch/memory/memory.sh" ask "percent off skills" | grep -q 'conversation.md · tool' &&
-    sh "$scratch/memory/memory.sh" ask --raw "percent off skills" | grep -q 'conversation.md · tool' &&
-    sh "$scratch/memory/memory.sh" ask "empty basket" | grep -q 'conversation.md · Copilot' &&
-    [ "$(sqlite3 "$mem/example-team.sqlite" "SELECT count(*) FROM pieces WHERE source LIKE 'runs/%';")" = 0 ]
+  copilot_events "$scratch/runs/001-x/step-4-review/copilot.jsonl"
+  root=$(git -C "$scratch/memory" rev-parse --show-toplevel)
+  copilot_events "$scratch/home/.copilot/session-state/s1/events.jsonl"
+  printf 'cwd: %s\n' "$root" > "$scratch/home/.copilot/session-state/s1/workspace.yaml"
+  copilot_events "$scratch/home/.copilot/session-state/s2/events.jsonl"
+  printf 'cwd: /somewhere/else\n' > "$scratch/home/.copilot/session-state/s2/workspace.yaml"
+  memory index "$scratch/runs" chief > /dev/null 2>&1
+  lc_db="$scratch/memory/group.sqlite"
+  [ "$(sqlite3 "$lc_db" "SELECT group_concat(session_id || ':' || kind, ' ') FROM (SELECT * FROM sessions ORDER BY session_id);")" = \
+    'chief/s1:chief runs/001-x/step-4-review/copilot.jsonl:reviewer' ] &&
+    [ "$(sqlite3 "$lc_db" "SELECT human_text || '|' || agent_text || '|' || tokens_in FROM exchanges WHERE session_id LIKE 'runs/%';")" = \
+      'Review the ticket.|I blocked it: no test for an empty basket.|100' ] &&
+    [ "$(sqlite3 "$lc_db" "SELECT count(*) FROM thinking_blocks;")" = 2 ] &&
+    [ "$(sqlite3 "$lc_db" "SELECT group_concat(tool_name || ':' || had_error || ':' || error_message, ' ') FROM tool_uses WHERE session_id LIKE 'runs/%';")" = \
+      'bash:1:Permission denied view:0:' ] &&
+    [ "$(sqlite3 "$lc_db" "SELECT count(*) FROM memories WHERE content LIKE '%the whole skill file%';")" = 0 ] &&
+    memory ask "empty basket" | grep -q 'The reviewer answered: I blocked it' &&
+    memory ask "empty basket" | grep -q 'You said: Review the ticket.' &&
+    memory sql "SELECT tool_params_summary FROM tool_uses WHERE had_error;" | grep -q 'outside.txt'
 }
-# own_day_first: before the group indexes its day, ask says so and answers from the example
+# own_day_first: before the group keeps its day, ask says so and answers from the example
 # team, the rescue; after, ask reads only the group's day, and --example the example team.
 own_day_first() {
   fresh_memory
-  sh "$scratch/memory/memory.sh" ask "who merges" | grep -q 'not indexed yet' || return 1
+  memory ask "who merges" | grep -q 'not kept yet' || return 1
   mkdir -p "$scratch/runs/001-x"
   printf '%s\n' 'A person merges every pull request.' > "$scratch/runs/001-x/pr.md"
-  sh "$scratch/memory/memory.sh" index "$scratch/runs" > /dev/null 2>&1
-  ! sh "$scratch/memory/memory.sh" ask "who merges" | grep -q 'example-team/' &&
-    sh "$scratch/memory/memory.sh" ask "who merges" | grep -q 'runs/001-x/pr.md' &&
-    sh "$scratch/memory/memory.sh" ask --example "who merges" | grep -q 'example-team/'
+  memory index "$scratch/runs" > /dev/null 2>&1
+  ! memory ask "who merges" | grep -q 'example-team/' &&
+    memory ask "who merges" | grep -q 'runs/001-x/pr.md' &&
+    memory ask --example "who merges" | grep -q 'example-team/'
 }
 check 'the model, minilm.bin' test -s "$mem/minilm.bin"
 for v in darwin-arm64 darwin-amd64; do
   check "the vectors program for $v" test -s "$mem/bin/vectors-$v"
 done
-check "every piece of the example team has its vector" vectors_ready "$mem/example-team.sqlite"
-check 'by meaning on this machine: "who is allowed to merge?" finds the merge conversation' \
-  meaning_finds 'who is allowed to merge?' 'chief-and-ines-merge.md · Ines'
-check "the group's own day first; the example team only before it is indexed or with --example" own_day_first
-check "a run's conversation is kept by who speaks, its tool turns left out, in the group's own index" turns_by_who
+check "everything the example team said and wrote has its vector" vectors_ready "$mem/example-team.sqlite"
+check 'by meaning on this machine: "who is allowed to merge?" finds Ines in the merge conversation' \
+  meaning_finds 'who is allowed to merge?' 'Ines said: # Chief and Ines · 12 March'
+check "the group's own day first; the example team only before it is kept or with --example" own_day_first
+check "a Copilot conversation kept as La Roca keeps one: who said what, thoughts, tools and denials; the chief's sessions of this repository only" like_a_corpus
 
 echo "the chief: Javier's talk of each module, as a skill"
 for m in 1 2 3 4; do

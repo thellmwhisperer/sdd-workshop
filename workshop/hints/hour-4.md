@@ -3,15 +3,14 @@
 For the chief only. Give the next hint of the current step, one at a time, in your own
 words. Never the answer.
 
-## Step A: index your day
+## Step A: keep your day
 
-1. Nothing to install: the tool needs only `sqlite3`. Index the group's own day:
-   `sh memory/memory.sh index graph/runs notes`, their runs, the chief's notes and the
-   decisions. It goes to their own index, `group.sqlite`.
-2. Each piece says who speaks: User is the graph's brief, Copilot is the agent. Answers
-   leave out Copilot's raw events and the tool turns (a file the agent read, a command it
-   ran). When ask says left-out pieces also matched, `sh memory/memory.sh ask --raw
-   "<question>"` shows them.
+1. Nothing to install: the tool needs only `sqlite3`. Keep the group's own day:
+   `sh memory/memory.sh index graph/runs notes chief`: every agent's conversation in their
+   runs, your notes and decisions, and their conversations with you.
+2. Every answer says who said it: the group, you, the worker, the reviewer. What an agent
+   thought is kept too, and every tool it called, with whether it was denied:
+   `sh memory/memory.sh tables` shows the questions SQL answers about them.
 3. Too few runs to ask about? Then, and only then, the rescue: the example team's cases in
    `memory/CASES.md`, asked with `sh memory/memory.sh ask --example "<question>"`.
 

@@ -406,24 +406,31 @@ step.
 The group works on its own day: its runs, its notes and its decisions. The tool is in
 `memory/` (it needs `sqlite3`). The example team (`example-team/`, `memory/CASES.md`) is
 the rescue, never the plan: open it only when the group's own runs are too few to ask
-about, with `ask --example` and `eval --example`. Once the day is indexed, ask and eval
-read only the group's own index.
+about, with `ask --example` and `eval --example`. Once the day is kept, ask, eval and sql
+read only the group's own day.
+
+The memory keeps a conversation the way La Roca keeps an agent corpus: what the human said
+and what the agent answered in each turn, what the agent thought, every tool it called
+with what it asked for and whether it was denied, the model, tokens and cost. It keeps
+the agents of every run step and the group's own conversations with you. `sh
+memory/memory.sh tables` shows the tables and the questions SQL answers; `sh
+memory/memory.sh sql "<SELECT>"` asks them, read only. Use it for what counts and patterns
+(how many times an agent was denied, what a run cost); use `ask` for why.
 
 1. **Read the last run.** A run of hour 3 still going in its terminal is left going; when it
    ends (its terminal says `run ...: green` or `red`), read what it left with the group, in
    the panel: the journal through `sh graph/state.sh graph/runs/<run>`, the worker's
    `report.md`, the reviewer's verdict, the pull request (decision 8216).
-2. **Index the day.** `sh memory/memory.sh index graph/runs notes`: their runs, your notes
-   of the day and the decision trail in `notes/decisions.tsv`, in their own index,
-   `memory/group.sqlite`. Everything a run left is kept. A conversation is kept by who
-   speaks, one turn per piece: User (the graph's brief) and Copilot (the agent). Copilot's
-   raw events (`copilot.jsonl`) and the tool turns (a file the agent read, a command it
-   ran) stay out of the answers; when ask says how many left-out pieces also matched,
-   `ask --raw` shows them.
+2. **Keep the day.** `sh memory/memory.sh index graph/runs notes chief`: their runs (every
+   agent's conversation, with its thoughts and tools), your notes and the decision trail
+   in `notes/decisions.tsv`, and their conversations with you, in `memory/group.sqlite`.
+   It prints one line saying what it kept; tell them that line in your words, never a
+   count they did not ask for.
 3. **Rebuild one case of their own.** The group picks a moment of its day: a block of the
-   reviewer, a run that took rounds, a decision of hour 1. Ask with
-   `sh memory/memory.sh ask "<question>"` and follow the pieces: what happened, when, who
-   decided, what changed. Every answer quotes the piece and who said it.
+   reviewer, a run that took rounds, a decision of hour 1, something an agent kept trying.
+   Ask with `sh memory/memory.sh ask "<question>"` and follow what it finds: what
+   happened, when, who decided, what changed. Every answer says who said it: you, the
+   group, the worker, the reviewer. For a pattern across runs, the tools: `sql`.
 4. **The eval.** `sh memory/memory.sh eval "<question>"`: the same question to the model
    without and with what the search found. Read both answers with the group, then propose
    one improvement to the system: another model, another limit, a new skill. Mark it

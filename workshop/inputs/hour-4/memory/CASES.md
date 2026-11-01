@@ -22,14 +22,14 @@ decided, what changed. Every answer quotes the piece it comes from.
 | 7. The discount read the wrong way | did the worker ever apply a discount the wrong way? |
 
 ```
-sh memory/memory.sh index graph/runs notes   your day: your runs and notes, in your own index
+sh memory/memory.sh index graph/runs notes chief   your day: runs, notes, your chief
 sh memory/memory.sh ask "<question>"     by words, and by meaning with a small model on the laptop
-sh memory/memory.sh ask --example "<question>"   these cases, once your own day is indexed
+sh memory/memory.sh ask --example "<question>"   these cases, once your own day is kept
 sh memory/memory.sh eval "<question>"    the model, without and with what was found
-sh memory/memory.sh ask --raw "<question>"   only what is left out above: Copilot's raw
-                                             events and the tools the agents used
+sh memory/memory.sh tables               what is kept, and the questions SQL answers
+sh memory/memory.sh sql "<SELECT>"       ask the tables directly
 ```
 
-Two indexes: yours, `group.sqlite`, and the example team's, `example-team.sqlite`. Once
-your day is indexed, ask and eval read yours; these cases need `--example`. Every
-conversation is kept by who speaks, one turn per piece.
+Two databases: yours, `group.sqlite`, and the example team's, `example-team.sqlite`. Once
+your day is kept, ask, eval and sql read yours; these cases need `--example`. Every
+conversation is kept by who said what.

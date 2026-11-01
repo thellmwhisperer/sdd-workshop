@@ -164,7 +164,7 @@ hour4_progress() {
   evals=${evals:-0}
 
   echo 'Hour 4 steps:'
-  echo "  A. Your day indexed (memory.sh index graph/runs notes): sqlite3 found: $sqlite; indexed: $own"
+  echo "  A. Your day indexed (memory.sh index graph/runs notes chief): sqlite3 found: $sqlite; indexed: $own"
   echo "  B. One case of your own rebuilt: questions asked: $asked"
   echo "  C. Evals, with and without retrieval: $evals"
   echo '  D. One improvement, proposed by the chief: the group decides'

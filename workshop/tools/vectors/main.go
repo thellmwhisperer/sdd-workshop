@@ -2,10 +2,15 @@
 // No server, no download, no library to install: one file for each system, and the model.
 // memory/memory.sh calls it; sqlite3 keeps the pieces and their vectors.
 //
-//	vectors embed <model>          stdin: [{"id":1,"text":"..."}] as sqlite3 -json prints
-//	                               stdout: the SQL that stores each piece's vector
+//	vectors embed <model> [table]  stdin: [{"id":1,"text":"..."}] as sqlite3 -json prints
+//	                               stdout: the SQL that stores each text's vector in table
+//	                               (vectors when not given)
 //	vectors near <model> <k> <q>   stdin: [{"id":1,"v":"<hex>"}], the stored vectors
 //	                               stdout: the k pieces closest to the question, "id<TAB>score"
+//	vectors events <id> <kind> <title>
+//	                               stdin: a Copilot conversation, one event per line
+//	                               stdout: the SQL that stores it as La Roca's corpus does:
+//	                               sessions, exchanges, tool_uses, thinking_blocks (events.go)
 //
 // A vector is stored as 384 bytes, each number times 127. The score is the cosine: 1 is the
 // same meaning, 0 nothing in common.
@@ -30,13 +35,24 @@ func main() {
 	if len(os.Args) < 3 {
 		usage()
 	}
+	if os.Args[1] == "events" {
+		if len(os.Args) != 5 {
+			usage()
+		}
+		events(os.Args[2], os.Args[3], os.Args[4])
+		return
+	}
 	m, err := load(os.Args[2])
 	if err != nil {
 		fail(err)
 	}
 	switch os.Args[1] {
 	case "embed":
-		embedAll(m)
+		table := "vectors"
+		if len(os.Args) > 3 {
+			table = os.Args[3]
+		}
+		embedAll(m, table)
 	case "near":
 		if len(os.Args) != 5 {
 			usage()
@@ -52,7 +68,7 @@ func main() {
 }
 
 func usage() {
-	fmt.Fprintln(os.Stderr, "usage: vectors embed <model>   |   vectors near <model> <k> <question>")
+	fmt.Fprintln(os.Stderr, "usage: vectors embed <model> [table]   |   vectors near <model> <k> <question>   |   vectors events <session_id> <kind> <title>")
 	os.Exit(2)
 }
 
@@ -76,7 +92,7 @@ func readJSON(v any) {
 }
 
 // embedAll: every piece's vector, on all the processor's cores, in the order they came.
-func embedAll(m *model) {
+func embedAll(m *model, table string) {
 	var pieces []struct {
 		ID   int64  `json:"id"`
 		Text string `json:"text"`
@@ -96,7 +112,7 @@ func embedAll(m *model) {
 				mu.Lock()
 				done++
 				if done%100 == 0 {
-					fmt.Fprintf(os.Stderr, "  by meaning: %d of %d pieces, %ds\n", done, len(pieces), int(time.Since(start).Seconds()))
+					fmt.Fprintf(os.Stderr, "  reading for meaning: %d of %d, %ds\n", done, len(pieces), int(time.Since(start).Seconds()))
 				}
 				mu.Unlock()
 			}
@@ -111,7 +127,7 @@ func embedAll(m *model) {
 	defer out.Flush()
 	fmt.Fprintln(out, "BEGIN;")
 	for i, p := range pieces {
-		fmt.Fprintf(out, "INSERT OR REPLACE INTO vectors (id, v) VALUES (%d, X'%s');\n", p.ID, hex.EncodeToString(bytes8(vecs[i])))
+		fmt.Fprintf(out, "INSERT OR REPLACE INTO %s (id, v) VALUES (%d, X'%s');\n", table, p.ID, hex.EncodeToString(bytes8(vecs[i])))
 	}
 	fmt.Fprintln(out, "COMMIT;")
 }

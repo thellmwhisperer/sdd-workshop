@@ -130,7 +130,7 @@ Javier closed these. Follow them; never reopen them, and never ask the group abo
 | Step in the deck | In the group's folder |
 |---|---|
 | A run from hour 3 still going is left going; when it ends, read what it left | `sh graph/state.sh graph/runs/<run>`, its `report.md`, the verdict, `pr.md` |
-| Index your day: your runs, your notes, your decisions | `sh memory/memory.sh index graph/runs notes` |
+| Index your day: your runs, your notes, your decisions | `sh memory/memory.sh index graph/runs notes chief` |
 | Rebuild one case of your own: what happened, when, who decided, what changed | `sh memory/memory.sh ask "<question>"`; every answer quotes the piece and who said it |
 | The eval, with and without retrieval; the chief proposes one improvement | `sh memory/memory.sh eval "<question>"` |
 
