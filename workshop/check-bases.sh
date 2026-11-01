@@ -130,24 +130,47 @@ check 'the publish script parses' sh -n "$workshop/../.github/pages/publish.sh"
 
 echo "hour 4's memory: search by meaning, with a small model and its program for the Mac"
 mem="$workshop/inputs/hour-4/memory"
-# vectors_ready <db>: every piece but Copilot's raw events has its vector.
+# vectors_ready <db>: every piece but what is left out (raw events, tool turns) has its vector.
 vectors_ready() {
-  [ "$(sqlite3 "$1" "SELECT (SELECT count(*) FROM pieces WHERE source NOT LIKE '%copilot.jsonl') = (SELECT count(*) FROM vectors);")" = 1 ]
+  [ "$(sqlite3 "$1" "SELECT (SELECT count(*) FROM pieces WHERE who NOT IN ('raw', 'tool')) = (SELECT count(*) FROM vectors);")" = 1 ]
 }
-# meaning_finds <question> <source>: on a copy of the memory, ask finds the source by meaning.
-meaning_finds() {
-  rm -rf "$scratch/memory"
+# fresh_memory: a copy of the memory in the scratch folder, with no index of a group yet.
+fresh_memory() {
+  rm -rf "$scratch/memory" "$scratch/runs"
   mkdir -p "$scratch"
   cp -R "$mem" "$scratch/memory"
-  sh "$scratch/memory/memory.sh" ask "$1" | awk '/^BY MEANING/ { on = 1 } on' | grep -q "$2"
+}
+# meaning_finds <question> <source>: on a copy of the memory, ask finds the source by meaning
+# in the example team's index.
+meaning_finds() {
+  fresh_memory
+  sh "$scratch/memory/memory.sh" ask "$1" | awk '/^THE EXAMPLE TEAM/ { team = 1 } /^YOUR RUNS/ { team = 0 }
+    team && /BY MEANING/ { on = 1 } on && team' | grep -q "$2"
+}
+# turns_by_who: a run's conversation.md is kept by who speaks; a tool turn (a file the agent
+# read, its path full of the words of the question) stays out of ask and comes with --raw.
+turns_by_who() {
+  fresh_memory
+  mkdir -p "$scratch/runs/001-x/step-4-review"
+  printf '%s\n' '# Copilot CLI Session' '' '### User' '' 'Review the ticket.' '' '---' '' '<sub>4s</sub>' '' \
+    '### `view`' '' '**view the file at /g/runs/001-percent-off/skills/reviewer/SKILL.md.**' '' '---' '' \
+    '### Copilot' '' 'I blocked it: no test for an empty basket.' \
+    > "$scratch/runs/001-x/step-4-review/conversation.md"
+  sh "$scratch/memory/memory.sh" index "$scratch/runs" > /dev/null 2>&1
+  [ "$(sqlite3 "$scratch/memory/group.sqlite" "SELECT group_concat(who, ',') FROM (SELECT who FROM pieces ORDER BY rowid);")" = User,tool,Copilot ] &&
+    ! sh "$scratch/memory/memory.sh" ask "percent off skills" | grep -q 'conversation.md · tool' &&
+    sh "$scratch/memory/memory.sh" ask --raw "percent off skills" | grep -q 'conversation.md · tool' &&
+    sh "$scratch/memory/memory.sh" ask "empty basket" | grep -q 'conversation.md · Copilot' &&
+    [ "$(sqlite3 "$mem/example-team.sqlite" "SELECT count(*) FROM pieces WHERE source LIKE 'runs/%';")" = 0 ]
 }
 check 'the model, minilm.bin' test -s "$mem/minilm.bin"
 for v in darwin-arm64 darwin-amd64; do
   check "the vectors program for $v" test -s "$mem/bin/vectors-$v"
 done
-check "every piece of the example team has its vector" vectors_ready "$mem/memory.sqlite"
+check "every piece of the example team has its vector" vectors_ready "$mem/example-team.sqlite"
 check 'by meaning on this machine: "who is allowed to merge?" finds the merge conversation' \
-  meaning_finds 'who is allowed to merge?' chief-and-ines-merge
+  meaning_finds 'who is allowed to merge?' 'chief-and-ines-merge.md · Ines'
+check "a run's conversation is kept by who speaks, its tool turns left out, in the group's own index" turns_by_who
 
 echo "the chief: Javier's talk of each module, as a skill"
 for m in 1 2 3 4; do
