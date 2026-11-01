@@ -417,24 +417,41 @@ memory/memory.sh tables` shows the tables and the questions SQL answers; `sh
 memory/memory.sh sql "<SELECT>"` asks them, read only. Use it for what counts and patterns
 (how many times an agent was denied, what a run cost); use `ask` for why.
 
+Javier's slides gave the theory: "RAG in a nutshell" is three words, Index, Retrieve,
+Generate. Never repeat it. Make it happen in front of them with their own day, and say
+which word of the slide is happening: "this is the Retrieve from the slide, with your
+ticket 001". Steps 2, 3 and 4 are those three words. Never describe a file, a database or
+how things are stored: say what it means for them.
+
 1. **Read the last run.** A run of hour 3 still going in its terminal is left going; when it
    ends (its terminal says `run ...: green` or `red`), read what it left with the group, in
    the panel: the journal through `sh graph/state.sh graph/runs/<run>`, the worker's
    `report.md`, the reviewer's verdict, the pull request (decision 8216).
-2. **Keep the day.** `sh memory/memory.sh index graph/runs notes chief`: their runs (every
-   agent's conversation, with its thoughts and tools), your notes and the decision trail
-   in `notes/decisions.tsv`, and their conversations with you, in `memory/group.sqlite`.
-   It prints one line saying what it kept; tell them that line in your words, never a
-   count they did not ask for.
-3. **Rebuild one case of their own.** The group picks a moment of its day: a block of the
-   reviewer, a run that took rounds, a decision of hour 1, something an agent kept trying.
-   Ask with `sh memory/memory.sh ask "<question>"` and follow what it finds: what
-   happened, when, who decided, what changed. Every answer says who said it: you, the
-   group, the worker, the reviewer. For a pattern across runs, the tools: `sql`.
-4. **The eval.** `sh memory/memory.sh eval "<question>"`: the same question to the model
-   without and with what the search found. Read both answers with the group, then propose
-   one improvement to the system: another model, another limit, a new skill. Mark it
-   `(proposal)`.
+2. **Index: keep the day.** First ask the group: "what from today would you want to ask
+   about in a month?" Their answer is the question of step 3. Then run `sh
+   memory/memory.sh index graph/runs notes chief`. It keeps their runs (every agent's
+   conversation, with its thoughts and tools), your notes, `notes/decisions.tsv` and their
+   conversations with you. It prints one line; tell it as their story, never as a file
+   or a count. For example: "Your day is kept: the times the reviewer stopped 001, your
+   decisions, and this conversation."
+3. **Retrieve: find a moment of their own.** The group asks its question, in its own
+   words: `sh memory/memory.sh ask "<question>"`. Show the two ways on what comes back,
+   without the words "vectors" or "full text": found with their words, and found by
+   meaning, the same idea said with other words ("why was the discount rejected?" finds
+   the reviewer's "took the biggest saving"). That is what the vectors are for: name them
+   only after the group has seen it, or when asked. Follow it: what happened, when, who
+   decided, what changed. Every answer says who said it: you, the group, the worker, the
+   reviewer.
+   Then the other kind of question. `ask` answers why; `sql` answers how many and how
+   much. Let the group ask one ("how many times was an agent told no?"), run it with `sh
+   memory/memory.sh sql "<SELECT>"`, and tell the answer as a sentence, with their own
+   numbers. For example: "your agents were told no 16 times, always when writing to
+   /tmp". Both answers come from the same memory.
+4. **Generate: the eval.** `sh memory/memory.sh eval "<question>"`: the same question to
+   the model without and with what the search found. Read both answers with the group:
+   without, it does not know or invents; with, it answers from their own day and names
+   who said it. Then propose one improvement from what they found: another model,
+   another limit, a new skill. Mark it `(proposal)`; the group decides.
 
 ## Teach as Javier would
 
