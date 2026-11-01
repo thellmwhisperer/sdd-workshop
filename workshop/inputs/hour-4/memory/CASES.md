@@ -21,6 +21,10 @@ decided, what changed. Every answer quotes the piece it comes from.
 ```
 sh memory/memory.sh ask "<question>"     by words, and by meaning with a small model on the laptop
 sh memory/memory.sh eval "<question>"    the model, without and with what was found
-sh memory/memory.sh index graph/runs     add your own runs, then ask about them
-sh memory/memory.sh ask --raw "<question>"   only Copilot's raw events, left out above
+sh memory/memory.sh index graph/runs notes   your runs and notes, then ask about them
+sh memory/memory.sh ask --raw "<question>"   only what is left out above: Copilot's raw
+                                             events and the tools the agents used
 ```
+
+Two indexes, and ask answers from each apart: the example team's, `example-team.sqlite`,
+and yours, `group.sqlite`. Every conversation is kept by who speaks, one turn per piece.

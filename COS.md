@@ -417,9 +417,13 @@ the pull request. Then go on; that run is the first thing they index in step 3
    the piece it comes from.
 3. **Their own runs.** `sh memory/memory.sh index graph/runs notes` (their runs, your
    notes of the day and the decision trail in `notes/decisions.tsv`), then ask about them:
-   why did we decide this? What happened in the run that failed? Everything a run left is
-   kept, but Copilot's raw events (`copilot.jsonl`, most of it) stay out of the answers;
-   when ask says how many raw pieces also matched, `ask --raw` shows them.
+   why did we decide this? What happened in the run that failed? They go to their own
+   index, `memory/group.sqlite`; the example team has its own, so ask answers from each
+   apart and neither buries the other. A conversation is kept by who speaks, one turn per
+   piece: in a run, User (the graph's brief) and Copilot (the agent); say who said it when
+   you quote. Everything a run left is kept, but Copilot's raw events (`copilot.jsonl`)
+   and the tool turns (a file the agent read, a command it ran) stay out of the answers;
+   when ask says how many left-out pieces also matched, `ask --raw` shows them.
 4. **The eval.** `sh memory/memory.sh eval "<question>"`: the same question to the model
    without and with what the search found. Read both answers with the group, then propose
    one improvement to the system: another model, another limit, a new skill. Mark it

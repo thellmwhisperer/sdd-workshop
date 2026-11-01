@@ -17,11 +17,14 @@ words. Never the answer.
 
 1. Follow the pieces: each answer names its file. Open the conversation or the handover
    it comes from, and ask the next question from there: who decided, and when?
-2. Index the group's own runs: `sh memory/memory.sh index graph/runs`. Indexing again
-   replaces only that folder, so the example team stays.
+2. Index the group's own runs: `sh memory/memory.sh index graph/runs notes`. They go to
+   their own index, `group.sqlite`, next to the example team's, so neither buries the
+   other: ask answers from each one apart.
 3. Ask about them: why did we decide this? What happened in the run that failed?
-4. Answers leave out Copilot's raw events, the machine lines of each step. When ask says
-   raw pieces also matched, `sh memory/memory.sh ask --raw "<question>"` shows them.
+4. Each piece says who speaks: User is the graph's brief, Copilot is the agent. Answers
+   leave out Copilot's raw events and the tool turns (a file the agent read, a command it
+   ran). When ask says left-out pieces also matched, `sh memory/memory.sh ask --raw
+   "<question>"` shows them.
 
 ## Step C: the eval
 
