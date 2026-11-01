@@ -1,10 +1,10 @@
 # Module 4 · Memory that improves the system
 
 Closing question: What happened in your case, and what changed after it?
-Given: The memory tool, `CASES.md` and the example team's runs
-The group decides: Which case to open; which question to ask of their own runs; which improvement to make
-The group builds: The case rebuilt; an index of their own runs; one eval with and without retrieval; one improvement
-Rescue: The example team's runs, when their own are too few
+Given: The memory tool; the group's own day: its runs, its notes and its decisions
+The group decides: Which case of their own day to rebuild; which question to ask; which improvement to make
+The group builds: An index of their own day; one case of their own rebuilt; one eval with and without retrieval; one improvement
+Rescue: The example team's cases (`memory/CASES.md`), when their own runs are too few
 
 ## How do you remember?
 
@@ -118,17 +118,16 @@ Layout: text
 
 Layout: hands-on
 
-1. a run from hour 3 still going in its terminal is left going. Open your case. The SQLite holds weeks of runs and conversations from an example team
-2. reconstruct it with the query script: what happened, when, who decided, what changed
-3. when a run ends, read what it left with your chief: the journal, the worker's report, the reviewer's verdict, the pull request. Then index your own runs and ask: why did we decide this? What happened in the run that failed?
-4. the eval: same question with and without retrieval. The chief proposes one improvement
+1. a run from hour 3 still going is left going. When it ends, read what it left with your chief: the journal, the worker's report, the reviewer's verdict, the pull request
+2. index your day: your runs, your notes, your decisions
+3. rebuild one case of your own: what happened, when, who decided, what changed. Every answer quotes the piece and who said it
+4. the eval: same question with and without retrieval. The chief proposes one improvement: another model, another cap, a new skill
 
-You: Why can't the reviewer merge?
-Chief: On 12 March your lead said: "merging is always human". Here is the quote.
-You: What went wrong in run 41?
-Chief: It looped seven times between worker and reviewer. Since then the cap is two rounds.
+You: Why did the reviewer block 001?
+Chief: Round 1: it took the biggest saving of all promotions. That rule belongs to 002 to 005. Here is the reviewer's report.
 
 # Decided
 
 - Hour 4 analyses what the day piled up: the runs, the decisions and the conversations (decision 8196).
+- Plan A is the group's own day; the example team's cases are the rescue, only when their own runs are too few (decided 1 November).
 - A run of hour 3 still going when hour 4 starts is left going; when it ends, the group reads what it left before indexing it (decisions 8216 and 8218).

@@ -100,17 +100,15 @@ Key line: **THE SYSTEM IMPROVES AS IT IS USED. ONLY IF SOMEONE LOOKS.**
 
 ### Hands on 4 · Ask your system
 
-1. a run from hour 3 still going in its terminal is left going. Open your case. The SQLite holds weeks of runs and conversations from an example team
-2. reconstruct it with the query script: what happened, when, who decided, what changed
-3. when a run ends, read what it left with your chief: the journal, the worker's report, the reviewer's verdict, the pull request. Then index your own runs and ask: why did we decide this? What happened in the run that failed?
-4. the eval: same question with and without retrieval. The chief proposes one improvement
+1. a run from hour 3 still going is left going. When it ends, read what it left with your chief: the journal, the worker's report, the reviewer's verdict, the pull request
+2. index your day: your runs, your notes, your decisions
+3. rebuild one case of your own: what happened, when, who decided, what changed. Every answer quotes the piece and who said it
+4. the eval: same question with and without retrieval. The chief proposes one improvement: another model, another cap, a new skill
 
 The example on the slide:
 
-- You: Why can't the reviewer merge?
-- Chief: On 12 March your lead said: "merging is always human". Here is the quote.
-- You: What went wrong in run 41?
-- Chief: It looped seven times between worker and reviewer. Since then the cap is two rounds.
+- You: Why did the reviewer block 001?
+- Chief: Round 1: it took the biggest saving of all promotions. That rule belongs to 002 to 005. Here is the reviewer's report.
 
 ## Javier's closing question
 
@@ -123,6 +121,7 @@ Javier asks it in the room, after the hands on. You never ask it.
 Javier closed these. Follow them; never reopen them, and never ask the group about them again.
 
 - Hour 4 analyses what the day piled up: the runs, the decisions and the conversations (decision 8196).
+- Plan A is the group's own day; the example team's cases are the rescue, only when their own runs are too few (decided 1 November).
 - A run of hour 3 still going when hour 4 starts is left going; when it ends, the group reads what it left before indexing it (decisions 8216 and 8218).
 <!-- source:module end -->
 
@@ -130,14 +129,17 @@ Javier closed these. Follow them; never reopen them, and never ask the group abo
 
 | Step in the deck | In the group's folder |
 |---|---|
-| Open your case: weeks of runs and conversations from an example team | `memory/CASES.md`, `example-team/`; `sh memory/memory.sh ask "<question>"` |
-| Reconstruct it: what happened, when, who decided, what changed | Every answer quotes the piece it comes from |
-| Index your own runs and ask about them | `sh memory/memory.sh index graph/runs notes` |
+| A run from hour 3 still going is left going; when it ends, read what it left | `sh graph/state.sh graph/runs/<run>`, its `report.md`, the verdict, `pr.md` |
+| Index your day: your runs, your notes, your decisions | `sh memory/memory.sh index graph/runs notes` |
+| Rebuild one case of your own: what happened, when, who decided, what changed | `sh memory/memory.sh ask "<question>"`; every answer quotes the piece and who said it |
 | The eval, with and without retrieval; the chief proposes one improvement | `sh memory/memory.sh eval "<question>"` |
 
-The example in the deck: "Why can't the reviewer merge?" On 12 March the lead said
-"merging is always human", with the quote. "What went wrong in run 41?" Seven rounds
-between worker and reviewer; since then the cap is two.
+The example in the deck: "Why did the reviewer block 001?" Round 1: it took the biggest
+saving of all promotions, a rule that belongs to later tickets; the chief shows the
+reviewer's report. That is group 4's own run; every group asks about its own.
+
+The example team (`memory/CASES.md`, `example-team/`) is the rescue, never the plan: open
+it only when the group's own runs are too few to ask about.
 
 ## Tie the talk to the work
 

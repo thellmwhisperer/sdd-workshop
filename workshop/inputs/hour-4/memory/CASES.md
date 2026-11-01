@@ -1,4 +1,7 @@
-# The cases of the example team
+# The cases of the example team: the rescue
+
+Your own day comes first: index your runs and notes, and rebuild a case of your own. Open
+these cases only when your own runs are too few to ask about.
 
 Northbank builds Harbour POS, the tills of a chain of shops. Ines is the lead, Tom an
 engineer, Priya product; they work with a chief, a worker, a reviewer and a watcher. Six
@@ -19,12 +22,14 @@ decided, what changed. Every answer quotes the piece it comes from.
 | 7. The discount read the wrong way | did the worker ever apply a discount the wrong way? |
 
 ```
+sh memory/memory.sh index graph/runs notes   your day: your runs and notes, in your own index
 sh memory/memory.sh ask "<question>"     by words, and by meaning with a small model on the laptop
+sh memory/memory.sh ask --example "<question>"   these cases, once your own day is indexed
 sh memory/memory.sh eval "<question>"    the model, without and with what was found
-sh memory/memory.sh index graph/runs notes   your runs and notes, then ask about them
 sh memory/memory.sh ask --raw "<question>"   only what is left out above: Copilot's raw
                                              events and the tools the agents used
 ```
 
-Two indexes, and ask answers from each apart: the example team's, `example-team.sqlite`,
-and yours, `group.sqlite`. Every conversation is kept by who speaks, one turn per piece.
+Two indexes: yours, `group.sqlite`, and the example team's, `example-team.sqlite`. Once
+your day is indexed, ask and eval read yours; these cases need `--example`. Every
+conversation is kept by who speaks, one turn per piece.

@@ -163,6 +163,18 @@ turns_by_who() {
     sh "$scratch/memory/memory.sh" ask "empty basket" | grep -q 'conversation.md · Copilot' &&
     [ "$(sqlite3 "$mem/example-team.sqlite" "SELECT count(*) FROM pieces WHERE source LIKE 'runs/%';")" = 0 ]
 }
+# own_day_first: before the group indexes its day, ask says so and answers from the example
+# team, the rescue; after, ask reads only the group's day, and --example the example team.
+own_day_first() {
+  fresh_memory
+  sh "$scratch/memory/memory.sh" ask "who merges" | grep -q 'not indexed yet' || return 1
+  mkdir -p "$scratch/runs/001-x"
+  printf '%s\n' 'A person merges every pull request.' > "$scratch/runs/001-x/pr.md"
+  sh "$scratch/memory/memory.sh" index "$scratch/runs" > /dev/null 2>&1
+  ! sh "$scratch/memory/memory.sh" ask "who merges" | grep -q 'example-team/' &&
+    sh "$scratch/memory/memory.sh" ask "who merges" | grep -q 'runs/001-x/pr.md' &&
+    sh "$scratch/memory/memory.sh" ask --example "who merges" | grep -q 'example-team/'
+}
 check 'the model, minilm.bin' test -s "$mem/minilm.bin"
 for v in darwin-arm64 darwin-amd64; do
   check "the vectors program for $v" test -s "$mem/bin/vectors-$v"
@@ -170,6 +182,7 @@ done
 check "every piece of the example team has its vector" vectors_ready "$mem/example-team.sqlite"
 check 'by meaning on this machine: "who is allowed to merge?" finds the merge conversation' \
   meaning_finds 'who is allowed to merge?' 'chief-and-ines-merge.md · Ines'
+check "the group's own day first; the example team only before it is indexed or with --example" own_day_first
 check "a run's conversation is kept by who speaks, its tool turns left out, in the group's own index" turns_by_who
 
 echo "the chief: Javier's talk of each module, as a skill"

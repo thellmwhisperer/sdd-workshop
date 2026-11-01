@@ -42,7 +42,7 @@ row, "decides" or "builds"; a step that fits neither is not yours to do.
 | 1 · The chief of staff | What did your chief ask that you had not decided? | `DOMAIN.md` with its open decisions; you | The decisions; the ACCEPTANCE numbers; when the backlog is ready | The product's change and its tickets, `001` onwards | None: a half backlog is still a backlog |
 | 2 · The graph loop | What did your node forbid the agent to do, and how did it know? | `graph/NODE.md`, `REPORT.md`, `copilot.sh`, `tests/fake-agent.sh`; `graph/node.sh` as a stub; `tickets/000-node.md` to complete; the tickets of hour 1 | How long the agent may run; which folder it may touch; whether no report is red | `graph/node.sh` and `graph/tests/test-node.sh`, six cases green, read and run by the group. No real agent yet: the node has only met the fake one | The prepared base of hour 3: the node and its test green |
 | 3 · Skills, context and tools | What did your reviewer block, and was it right? | The node green; `graph/PATH.md` and its drawing; `graph/run.sh`, the loop that walks the path, with its test green; `graph/pr.sh`, which writes the pull request from the run | How many rounds before a person; what the reviewer may block; a person merges or CI does | `graph/path.jsonl` and the worker and reviewer skills; then ticket 001 through the five steps, the first time the node meets a real agent, each run in its own copy of the repository and its own branch; ticket 002 whenever they want, even at the same time | The prepared base of hour 4: path, skills and loop done, every test green |
-| 4 · Memory that improves the system | What happened in your case, and what changed after it? | The memory tool, `CASES.md` and the example team's runs | Which case to open; which question to ask of their own runs; which improvement to make | The case rebuilt; an index of their own runs; one eval with and without retrieval; one improvement | The example team's runs, when their own are too few |
+| 4 · Memory that improves the system | What happened in your case, and what changed after it? | The memory tool; the group's own day: its runs, its notes and its decisions | Which case of their own day to rebuild; which question to ask; which improvement to make | An index of their own day; one case of their own rebuilt; one eval with and without retrieval; one improvement | The example team's cases (`memory/CASES.md`), when their own runs are too few |
 <!-- source:day end -->
 
 <!-- source:decided begin: written by sh workshop/source/render.sh from workshop/source/; edit the source, never this block -->
@@ -403,27 +403,27 @@ step.
 
 ### Hour 4: ask your system
 
-The tool is in `memory/` (it needs `sqlite3`), and the example team is in
-`example-team/`. Read `memory/CASES.md`. A run of hour 3 still going in its terminal is
-left going; when it ends (its terminal says `run ...: green` or `red`), stop what you are
-doing and read what it left with the group, in the panel: the journal through
-`sh graph/state.sh graph/runs/<run>`, the worker's `report.md`, the reviewer's verdict,
-the pull request. Then go on; that run is the first thing they index in step 3
-(decision 8216).
+The group works on its own day: its runs, its notes and its decisions. The tool is in
+`memory/` (it needs `sqlite3`). The example team (`example-team/`, `memory/CASES.md`) is
+the rescue, never the plan: open it only when the group's own runs are too few to ask
+about, with `ask --example` and `eval --example`. Once the day is indexed, ask and eval
+read only the group's own index.
 
-1. **Open your case.** The group picks one of the seven cases in `memory/CASES.md`. Ask its
-   starting question with `sh memory/memory.sh ask "<question>"`.
-2. **Reconstruct it.** What happened, when, who decided, what changed. Every answer quotes
-   the piece it comes from.
-3. **Their own runs.** `sh memory/memory.sh index graph/runs notes` (their runs, your
-   notes of the day and the decision trail in `notes/decisions.tsv`), then ask about them:
-   why did we decide this? What happened in the run that failed? They go to their own
-   index, `memory/group.sqlite`; the example team has its own, so ask answers from each
-   apart and neither buries the other. A conversation is kept by who speaks, one turn per
-   piece: in a run, User (the graph's brief) and Copilot (the agent); say who said it when
-   you quote. Everything a run left is kept, but Copilot's raw events (`copilot.jsonl`)
-   and the tool turns (a file the agent read, a command it ran) stay out of the answers;
-   when ask says how many left-out pieces also matched, `ask --raw` shows them.
+1. **Read the last run.** A run of hour 3 still going in its terminal is left going; when it
+   ends (its terminal says `run ...: green` or `red`), read what it left with the group, in
+   the panel: the journal through `sh graph/state.sh graph/runs/<run>`, the worker's
+   `report.md`, the reviewer's verdict, the pull request (decision 8216).
+2. **Index the day.** `sh memory/memory.sh index graph/runs notes`: their runs, your notes
+   of the day and the decision trail in `notes/decisions.tsv`, in their own index,
+   `memory/group.sqlite`. Everything a run left is kept. A conversation is kept by who
+   speaks, one turn per piece: User (the graph's brief) and Copilot (the agent). Copilot's
+   raw events (`copilot.jsonl`) and the tool turns (a file the agent read, a command it
+   ran) stay out of the answers; when ask says how many left-out pieces also matched,
+   `ask --raw` shows them.
+3. **Rebuild one case of their own.** The group picks a moment of its day: a block of the
+   reviewer, a run that took rounds, a decision of hour 1. Ask with
+   `sh memory/memory.sh ask "<question>"` and follow the pieces: what happened, when, who
+   decided, what changed. Every answer quotes the piece and who said it.
 4. **The eval.** `sh memory/memory.sh eval "<question>"`: the same question to the model
    without and with what the search found. Read both answers with the group, then propose
    one improvement to the system: another model, another limit, a new skill. Mark it

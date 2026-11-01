@@ -3,28 +3,29 @@
 For the chief only. Give the next hint of the current step, one at a time, in your own
 words. Never the answer.
 
-## Step A: open your case
+## Step A: index your day
 
-1. Nothing to install: the tool needs only `sqlite3`. Read `memory/CASES.md` with the group
-   and let them pick one case.
-2. Ask its starting question with `sh memory/memory.sh ask "<question>"`. It searches
-   twice: by words, and by meaning with a small model on the laptop.
-3. If by words finds nothing and by meaning finds it, that is the lesson: the team wrote
-   it with other words, and the vectors match the meaning. A concrete question works
-   better than a vague one.
-
-## Step B: reconstruct it, then your own runs
-
-1. Follow the pieces: each answer names its file. Open the conversation or the handover
-   it comes from, and ask the next question from there: who decided, and when?
-2. Index the group's own runs: `sh memory/memory.sh index graph/runs notes`. They go to
-   their own index, `group.sqlite`, next to the example team's, so neither buries the
-   other: ask answers from each one apart.
-3. Ask about them: why did we decide this? What happened in the run that failed?
-4. Each piece says who speaks: User is the graph's brief, Copilot is the agent. Answers
+1. Nothing to install: the tool needs only `sqlite3`. Index the group's own day:
+   `sh memory/memory.sh index graph/runs notes`, their runs, the chief's notes and the
+   decisions. It goes to their own index, `group.sqlite`.
+2. Each piece says who speaks: User is the graph's brief, Copilot is the agent. Answers
    leave out Copilot's raw events and the tool turns (a file the agent read, a command it
    ran). When ask says left-out pieces also matched, `sh memory/memory.sh ask --raw
    "<question>"` shows them.
+3. Too few runs to ask about? Then, and only then, the rescue: the example team's cases in
+   `memory/CASES.md`, asked with `sh memory/memory.sh ask --example "<question>"`.
+
+## Step B: rebuild one case of your own
+
+1. Let the group pick a moment of its day: a block of the reviewer, a run that took
+   rounds, a decision of hour 1. Ask it with `sh memory/memory.sh ask "<question>"`. It
+   searches twice: by words, and by meaning with a small model on the laptop.
+2. If by words finds nothing and by meaning finds it, that is the lesson: it was written
+   with other words, and the vectors match the meaning. A concrete question works better
+   than a vague one.
+3. Follow the pieces: each answer names its file and who said it. Open the report or the
+   conversation it comes from, and ask the next question from there: who decided, and
+   when?
 
 ## Step C: the eval
 

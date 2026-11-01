@@ -164,14 +164,14 @@ hour4_progress() {
   evals=${evals:-0}
 
   echo 'Hour 4 steps:'
-  echo "  A. Your case: sqlite3 found: $sqlite; questions asked: $asked"
-  echo "  B. Your own runs indexed (memory.sh index graph/runs): $own"
+  echo "  A. Your day indexed (memory.sh index graph/runs notes): sqlite3 found: $sqlite; indexed: $own"
+  echo "  B. One case of your own rebuilt: questions asked: $asked"
   echo "  C. Evals, with and without retrieval: $evals"
   echo '  D. One improvement, proposed by the chief: the group decides'
 
   current=''
-  if [ "$sqlite" = no ] || [ "$asked" -eq 0 ]; then current=A
-  elif [ "$own" = no ]; then current=B
+  if [ "$sqlite" = no ] || [ "$own" = no ]; then current=A
+  elif [ "$asked" -eq 0 ]; then current=B
   elif [ "$evals" -eq 0 ]; then current=C
   fi
   finish 4 "$current"

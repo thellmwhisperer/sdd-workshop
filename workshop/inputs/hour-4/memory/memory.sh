@@ -7,8 +7,11 @@
 #                                           what ask finds
 #   ask --raw, eval --raw                   search what is left out: Copilot's raw events and
 #                                           the tools the agents used
-# Two indexes, so neither buries the other: example-team.sqlite holds the example team,
-# given; group.sqlite holds what you index, your runs and your notes. ask answers from each.
+#   ask --example, eval --example           search the example team, the rescue
+# Two indexes, so neither buries the other: group.sqlite holds your own day, what you
+# index (your runs and your notes); example-team.sqlite holds the example team, given, the
+# rescue for a group with too few runs. Once your day is indexed, ask and eval read it;
+# before that, or with --example, they read the example team.
 # A conversation is kept by who speaks, one turn per piece, the speaker in its own field:
 # in the example team, "Ines:" or "Chief:"; in a run's conversation.md, User (the graph's
 # brief) and Copilot (the agent), and tool for each tool the agent called with what it
@@ -241,9 +244,23 @@ ask_one() {
   printf '\n'
 }
 
+# which_db: the index ask and eval read: the group's own day once it is indexed; the example
+# team, the rescue, before that or with --example.
+example=no
+which_db() {
+  if [ "$example" = no ] && indexed "$group_db"; then printf '%s\n' "$group_db"; else printf '%s\n' "$example_db"; fi
+}
+
 ask() {
-  ask_one "$example_db" 'THE EXAMPLE TEAM (example-team.sqlite):' "$1"
-  ask_one "$group_db" 'YOUR RUNS AND NOTES (group.sqlite):' "$1"
+  db=$(which_db)
+  if [ "$db" = "$group_db" ]; then
+    ask_one "$db" 'YOUR DAY: YOUR RUNS AND NOTES (group.sqlite):' "$1"
+  else
+    if [ "$example" = no ]; then
+      printf 'Your own day is not indexed yet: sh memory/memory.sh index graph/runs notes\n\n'
+    fi
+    ask_one "$db" 'THE EXAMPLE TEAM, THE RESCUE (example-team.sqlite):' "$1"
+  fi
 }
 
 # model <prompt>: the model's answer. Copilot CLI answers with no tools, from an empty folder,
@@ -256,14 +273,13 @@ model() {
     --disallow-temp-dir -C "$empty" 2>&1 || true
 }
 
-# evaluate <question>: the same question to the model twice: alone, and with what ask found
-# in both indexes.
+# evaluate <question>: the same question to the model twice: alone, and with what ask finds.
 evaluate() {
-  found=$(for db in "$example_db" "$group_db"; do
-    indexed "$db" || continue
+  db=$(which_db)
+  found=$( {
     if [ "$raw" = no ]; then meaning "$db" "$1" | cut -f 1-3; fi
     search "$db" "$1"
-  done | awk 'NF && !seen[$0]++')
+  } | awk 'NF && !seen[$0]++')
   rule='Do not use any tools. Answer in at most three sentences. If you do not know, say so.'
   printf 'WITHOUT RETRIEVAL:\n%s\n\n' "$(model "$rule
 
@@ -290,7 +306,14 @@ case $command in
   index | ask | eval) if [ $# -gt 0 ]; then printf '%s\t%s\n' "$command" "$*" >> "$here/memory.log"; fi ;;
 esac
 case $command in
-  ask | eval) if [ "${1:-}" = --raw ]; then raw=yes; shift; fi ;;
+  ask | eval)
+    while [ $# -gt 0 ]; do
+      case $1 in
+        --raw) raw=yes; shift ;;
+        --example) example=yes; shift ;;
+        *) break ;;
+      esac
+    done ;;
 esac
 if [ "$command" = index ] && [ $# -gt 0 ]; then
   index_folders "$@"
@@ -299,5 +322,5 @@ elif [ "$command" = ask ] && [ $# -gt 0 ]; then
 elif [ "$command" = eval ] && [ $# -gt 0 ]; then
   evaluate "$*"
 else
-  printf 'Usage: sh memory/memory.sh index <folder>...   |   sh memory/memory.sh ask [--raw] "<question>"   |   sh memory/memory.sh eval [--raw] "<question>"\n'
+  printf 'Usage: sh memory/memory.sh index <folder>...   |   sh memory/memory.sh ask [--raw] [--example] "<question>"   |   sh memory/memory.sh eval [--raw] [--example] "<question>"\n'
 fi
