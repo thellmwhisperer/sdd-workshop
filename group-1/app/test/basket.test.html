@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>basket</title>
+</head>
+<body>
+<pre id="result"></pre>
+<script src="../checkout.js"></script>
+<script src="check.js"></script>
+<script>
+var shirt = { name: "shirt", price: 6000 };
+var scarf = { name: "scarf", price: 2500 };
+
+var b1 = Checkout.newBasket();
+Checkout.add(b1, shirt);
+check("1.1 one product", b1.lines.length, 1);
+check("1.1 line amount", Checkout.money(b1.lines[0].amount), "60.00");
+check("1.1 total", Checkout.money(Checkout.total(b1)), "60.00");
+
+var b2 = Checkout.newBasket();
+Checkout.add(b2, shirt);
+Checkout.add(b2, scarf);
+check("1.2 two products", Checkout.money(Checkout.total(b2)), "85.00");
+
+var b3 = Checkout.newBasket();
+Checkout.add(b3, shirt);
+Checkout.add(b3, shirt);
+check("1.3 same product twice, lines", b3.lines.length, 1);
+check("1.3 same product twice, quantity", b3.lines[0].quantity, 2);
+check("1.3 same product twice, amount", Checkout.money(b3.lines[0].amount), "120.00");
+check("1.3 same product twice, total", Checkout.money(Checkout.total(b3)), "120.00");
+
+var b4 = Checkout.newBasket();
+Checkout.add(b4, shirt);
+Checkout.add(b4, scarf);
+Checkout.remove(b4, "scarf");
+check("1.4 scarf removed", Checkout.money(Checkout.total(b4)), "60.00");
+
+check("1.5 empty basket", Checkout.money(Checkout.total(Checkout.newBasket())), "0.00");
+</script>
+</body>
+</html>

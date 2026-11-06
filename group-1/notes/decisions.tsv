@@ -1,1 +1,25 @@
 when	who	what	why	evidence
+2026-11-05 14:56	group 1	Payment methods: card only	to keep the first version simple	DOMAIN.md, decision 1
+2026-11-05 14:57	group 1	VAT on screen: prices with VAT included	so checkout prices match the shelf	DOMAIN.md, decision 2
+2026-11-05 14:58	group 1	Returns without the receipt: allowed	so customers are not turned away	DOMAIN.md, decision 3
+2026-11-05 15:02	group 1	VAT rate: 20 % for every product	20% is fine	design.md, spec.md
+2026-11-05 15:03	group 1	Rounding: each line to the nearest cent, half up	Yes, round each line to the nearest cent, half up	design.md
+2026-11-05 15:04	group 1	Products: a fixed list in the page (name, price with VAT, optional sticker)	Yes, a fixed list in the page	design.md
+2026-11-05 15:05	group 1	Sticker: one percentage set on the product, not typed by the cashier	Yes, a percentage on the product	design.md
+2026-11-05 15:06	group 1	Sales kept on the tablet (browser storage), numbered from 1	Yes, keep sales on the tablet	design.md
+2026-11-05 15:07	group 1	Card payment: a button pressed after the terminal accepts; no link to the terminal	Yes, a button that records the sale	design.md
+2026-11-05 15:08	group 1	VAT recorded with each sale, not shown on the cashier's screen	Yes, record VAT but do not show it	spec.md, requirement 3
+2026-11-05 15:09	group 1	End-of-day summary in the first version (taken, refunded, net, VAT)	Yes, keep the end-of-day summary	spec.md, requirement 8
+2026-11-05 15:10	group 1	Return without a receipt: any price above 0.00, no limit, no manager check	Yes, any price above 0.00	spec.md, requirement 6
+2026-11-05 15:14	group 1	Ticket 007 (sale and return in one basket) kept as its own ticket, not merged into 006	Keep 007 as its own ticket	tickets/007-sale-and-return.md
+2026-11-05 15:15	group 1	Ticket 010 (returns and summary on the screen) kept whole, not split	Keep 010 whole	tickets/010-returns-and-summary-screen.md
+2026-11-05 15:15	group 1	The tablet's product list: shirt 60.00, shirt 60.00 with 30 % sticker, scarf 25.00, jumper 39.90 with 15 % sticker	Keep those four products	tickets/009-basket-screen.md
+2026-11-05 15:19	group 1	Backlog signed off: the change add-shop-checkout and tickets 001 to 010 as they are	We accept the change and the tickets of hour 1 as they are	tickets/backlog-ready.md
+2026-11-05 15:20	group 1	Agent limit: the node cuts an agent after 120 seconds	Two minutes, so a stuck agent does not hold up the group	graph/NODE.md (limit)
+2026-11-05 15:22	group 1	Agent folder: the agent may change app only; anything else (besides graph/runs/) is red	Only app, so the agent cannot change the agreed tickets	graph/NODE.md (dir)
+2026-11-05 15:22	group 1	No report is red: an agent that ends without report.md (or without its four headings) is red	reason: not given (the group said: Yes, go on)	graph/NODE.md, graph/REPORT.md
+2026-11-05 15:23	group 1	Ticket 000 (the node) approved and signed	Yes, go on	tickets/000-node.md
+2026-11-05 15:47	group 1	Hour 2 from the prepared base: the reference node.sh and test-node.sh replace the worker's (its test had an unclosed quote on line 155)	Do not spend more time on it: take hour 2 from the prepared base	graph/node.sh, graph/tests/test-node.sh
+2026-11-05 15:58	group 1	One round back to the worker before a person decides (rounds 1 on check and review)	reason: not given	graph/path.jsonl
+2026-11-05 15:59	group 1	The reviewer may block on tests and lint only, not on design	reason: not given	.github/skills/reviewer/SKILL.md
+2026-11-05 15:59	group 1	A person merges the pull request; the deliver step only opens it	reason: not given	graph/path.jsonl
